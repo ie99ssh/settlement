@@ -1,0 +1,45 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 전체 로그인 레이아웃
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <title th:text="${@environment.getProperty('browser.title')}"></title>
+        <link rel="shortcut icon" th:href="${@environment.getProperty('static.url') + '/Images/sd_favicon.png'}">
+        <!-- 공통 CSS 영역 -->
+        <th:block th:include="layout/config :: common_css"></th:block>
+        <!-- Custom CSS 영역 -->
+        <th:block layout:fragment="customCSS"></th:block>
+        <!-- 공통 Javascript 영역 -->
+        <th:block th:include="layout/config :: common_js"></th:block>
+    </head>
+    <body class="error-body no-top">
+        <div class="container">
+            <!-- 로그인 화면 -->
+            <th:block th:replace="login/loginProc :: loginProcFragment"></th:block>
+
+            <!-- 로그인 모달 화면 -->
+            <th:block th:replace="login/loginModal :: loginModalFragment"></th:block>
+
+            <!-- 비밀번호 초기화 모달 화면 -->
+            <div layout:fragment="content"></div>
+
+            <!-- BEGIN AJAX LOADER -->
+            <div id="divPageBlock" style="display:none;">
+                <img th:src="${@environment.getProperty('static.url') + '/Images/ajax_loader_02.gif'}">
+            </div>
+            <!-- END AJAX LOADER -->
+        </div>
+
+        <script th:replace="login/loginScript :: loginScriptFragment"></script>
+        <!-- Custom javascript 영역 -->
+        <th:block layout:fragment="customJS"></th:block>
+    </body>
+</html>

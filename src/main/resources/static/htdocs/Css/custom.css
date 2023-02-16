@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+
+/* input text 를 링크 형식으로 보이도록 처리 */
+.text_link  {
+    color: #0000ff !important;
+    cursor: pointer;
+}
+
+/* 테두리를 두텁께 하여 식별이 잘 되도록 처리 */
+.custom_thick_table {
+    border:3px solid #ddd !important;
+}
+

@@ -1,0 +1,129 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 공통 모달 영역
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <th:block th:fragment="modalFragment">
+        <!-- BEGIN MODAL -->
+        <button id="btnModalMsg" data-toggle="modal" data-target="#alertModal" style="width:0px; height:0px; display:none;"></button>
+        <div class="modal" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="modalMsg" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="btnAlertModalTop" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <br>
+                        <i class="fa fa-warning fa-3x"></i>
+                        <h4 id="modalMsg" class="semi-bold"></h4>
+                        <br>
+                        <div id="modalDetailDiv" style="display:none;">
+                            <div id="modalDetailMsg" style="text-align: left;height: 200px;overflow-y: scroll;"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="btnAlertModalBottom" class="btn btn-default" data-dismiss="modal" >Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END MODAL -->
+
+        <!-- BEGIN MODAL -->
+        <button id="btnModalMsgMul" data-toggle="modal" data-target="#alertModalMul" style="width:0px; height:0px; display:none;"></button>
+        <div class="modal" id="alertModalMul" tabindex="-1" role="dialog" aria-labelledby="modalMsg" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="btnAlertModalTopMul" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <br>
+                        <i class="fa fa-warning fa-3x"></i>
+                        <h4 id="modalMsgMul" class="semi-bold"></h4>
+                        <br>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="btnAlertModalBottomMul" class="btn btn-default" data-dismiss="modal" onclick="eval(strAlertCallBack)();">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END MODAL -->
+
+        <!-- BEGIN CONFIRM MODAL -->
+        <button id="btnModalConfirm" data-toggle="modal" data-target="#confirmModal" style="width:0px; height:0px; display:none;"></button>
+        <div class="modal" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="modalConfirm" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="btnConfirmModalTop" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <br>
+                        <i class="fa fa-exclamation fa-2x"></i>
+                        <h4 id="modalConfirm" class="semi-bold"></h4>
+                        <br>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="btnConfirmModalBottom" data-dismiss="modal" class="btn btn-default">취소</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="eval(strAlertCallBack)();">확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END CONFIRM MODAL -->
+
+        <!-- BEGIN CHANGE PASSWORD MODAL -->
+        <button id="btnModalPwdChange" data-toggle="modal" data-target="#pwdChangeModal" style="width:0px; height:0px; display:none;"></button>
+        <div class="modal" id="pwdChangeModal" tabindex="-1" role="dialog" aria-labelledby="modalPwdChange" aria-hidden="true">
+            <div class="modal-dialog">
+                <form id="frmPwdChange">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="COMMON.Msg.fnResetBodyClass();">×</button>
+                            <br>
+                            <i class="fa fa-unlock-alt fa-2x"></i>
+                            <h4 id="modalPwdChange" class="semi-bold">비밀번호 변경</h4>
+                            <br>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row form-row">
+                                <div class="col-md-12">
+                                    <div class="input-with-icon  right">
+                                        <i class=""></i>
+                                        <input class="form-control" type="password" id="inpCurrPwd" name="currPwd" placeholder="현재 비밀번호를 입력해 주십시오." maxlength="64">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row form-row">
+                                <div class="col-md-12">
+                                    <div class="input-with-icon  right">
+                                        <i class=""></i>
+                                        <input class="form-control" type="password" id="inpNewPwd" name="newPwd" placeholder="새로운 비밀번호를 입력해 주십시오." maxlength="64">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row form-row">
+                                <div class="col-md-12">
+                                    <div class="input-with-icon  right">
+                                        <i class=""></i>
+                                        <input class="form-control" type="password" id="inpReNewPwd" name="reNewPwd" placeholder="새로운 비밀번호를 다시 입력해 주십시오." maxlength="64">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" onclick="COMMON.Msg.fnResetBodyClass(); COMMON.Utils.fnFrmReset('frmpw');">취소</button>
+                            <button type="button" id="btnChangePwd" class="btn btn-danger">저장</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- END CHANGE PASSWORD MODAL -->
+
+        <!-- BEGIN AJAX LOADER -->
+        <div id="divPageBlock" style="display:none;">
+            <img th:src="${@environment.getProperty('static.url') + '/Images/ajax_loader_02.gif'}">
+        </div>
+        <!-- END AJAX LOADER -->
+    </th:block>
+</html>

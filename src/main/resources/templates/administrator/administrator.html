@@ -1,0 +1,656 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 관리자 View
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default">
+
+<th:block layout:fragment="content">
+<!-- BEGIN PAGE CONTAINER-->
+<div class="page-content">
+    <div class="content">
+        <div class="clearfix"></div>
+
+        <!-- BEGIN PAGE TITLE -->
+        <ul class="breadcrumb">
+            <li><p>YOU ARE HERE</p></li>
+            <li><a href="javascript:;" class="active" th:text="${#request.getAttribute('menuGroupName')}">메뉴그룹명</a>
+            </li>
+        </ul>
+        <div class="page-title"><i class="icon-custom-left"></i>
+            <h4><span class="semi-bold" th:text="${#request.getAttribute('menuName')}">메뉴명</span></h4>
+        </div>
+        <!-- END PAGE TITLE -->
+
+        <!-- BEGIN VIEW OPTION AREA -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="grid simple">
+                    <div class="grid-title no-border">
+                        <h4><i class="fa fa-th-large"></i><span>조회 조건</span></h4>
+                        <div class="tools"><a href="javascript:;" id="searchCollapse" class="collapse"></a></div>
+                    </div>
+                    <div class="grid-body no-border">
+                        <form id="frmSearch" name="frmsearch">
+                            <input type="hidden" name="strSortType">
+                            <input type="hidden" name="strSortColumn">
+                            <div class="row form-row">
+                                <div class="col-md-3">
+                                    <label class="form-label">관리자명</label>
+                                    <div class="input-with-icon  right">
+                                        <input type="text" id="txtAdminName" name="adminName" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">관리자ID</label>
+                                    <div class="input-with-icon  right">
+                                        <input type="text" id="txtAdminID" name="adminId" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">휴대전화번호</label>
+                                    <div class="input-with-icon  right">
+                                        <input type="text" id="txtCelNo" name="phoneNo" class="form-control" placeholder="( ‘-’ 포함/미포함 모두 입력 가능)" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row form-row">
+                                <div class="col-md-3">
+                                    <label class="form-label">이메일</label>
+                                    <div class="input-with-icon  right">
+                                        <input type="text" id="txtEmail" name="email" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">상태</label>
+                                    <select id="selUseFlag" name="useFlag" class="select2 form-control">
+                                        <option value="">전체</option>
+                                        <option value="true">사용</option>
+                                        <option value="false">중지</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="divideline"></div>
+                            <div class="row form-row">
+                                <div class="col-md-9"></div>
+                                <div class="col-md-3" style="text-align:right;">
+                                    <div>
+                                        <button type="button" id="btnSearch" class="btn btn-primary btn-small">조회</button>
+                                        <button type="button" id="btnRegist" th:style="${#request.getAttribute('authCode')} == 1 ? '' : 'display: none'" class="btn btn-danger btn-small">등록</button>
+                                        <button type="button" id="btnExcel" th:style="${#request.getAttribute('dnAvailFlag')} ? '' : 'display: none'" class="btn btn-info btn-small">엑셀</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END VIEW OPTION AREA -->
+
+        <!-- BEGIN SEARCH LIST AREA -->
+        <div id="div_search" class="row">
+            <div class="col-md-12">
+                <div class="grid simple">
+                    <div class="grid-title no-border">
+                        <h4><i class="fa fa-th-large"></i><span>조회 결과</span></h4>
+                        <div class="tools"><a href="javascript:;" class="collapse"></a></div>
+                    </div>
+                    <div class="grid-body no-border" >
+                        <div id="div_searchResult" style="display:none;">
+                            <div class="grid simple ">
+                                <div class="grid-body ">
+                                    <table class="table" id="tblAdministrator" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th id="adminNo" class="sort_header">관리자번호</th>
+                                                <th id="adminName" class="sort_header">관리자명</th>
+                                                <th id="adminId" class="sort_header">관리자ID</th>
+                                                <th id="phoneNo" class="sort_header">휴대전화번호</th>
+                                                <th id="email" class="sort_header">이메일</th>
+                                                <th id="useFlag" class="sort_header">상태</th>
+                                                <th>수정</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END SEARCH LIST AREA -->
+   </div>
+   <!-- END PAGE -->
+</div>
+<!-- BEGIN PAGE CONTAINER-->
+
+<!-- BEGIN REGIST MODAL AREA -->
+<div class="modal" id="divInsAdminModal" tabindex="-1" role="dialog" aria-labelledby="labelInsAdminModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" aria-hidden="true" data-dismiss="modal">x</button>
+                <br>
+                <i class="fa fa-pencil fa-2x"></i>
+                <h4 id="myModalLabel" class="semi-bold">관리자 등록</h4>
+                <br>
+            </div>
+            <div class="modal-body">
+                <form id="frmInsAdmin" name="frmInsAdmin">
+                    <div class="form-group">
+                        <label class="form-label"><span>관리자ID</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="txtInsAdminId" name="adminId" class="form-control" placeholder="(영숫자 조합 20자 이내)" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>관리자명</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="txtInsAdminName" name="adminName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>핸드폰번호</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="txtInsCelNo" name="phoneNo" class="form-control" placeholder="( ‘-’ 포함/미포함 모두 입력 가능)" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>이메일</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="txtInsEmail" name="email" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>메뉴권한</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <select id="selInsMenuRoleNo" name="menuRoleNo" class="select2 form-control">
+                                <option value="">전체</option>
+                                <option th:each="menuRole : ${menuRoleList}" th:value="${menuRole.menuRoleNo}" th:text="${menuRole.menuRoleName}" />
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">특정 액세스IP만 사용</label>
+                        <div class="form-group">
+                            <input type="checkbox" id="chkInsAccessIPRestrictFlag" name="accessIPRestrictFlag" class="toggleFlag" data-on="Y" data-off="N">
+                        </div>
+                    </div>
+                    <div id="divInsIPAddressArea" style="display:none;">
+                        <div class="form-group">
+                            <label class="form-label">접속 IP주소 3개까지 입력</label>
+                            <div class="list-inline">
+                                <i class=""></i>
+                                <li><input type="text" id="txtInsAccessIP1" name="accessIP1" class="form-control" /></li>
+                                <li><input type="text" id="txtInsAccessIP2" name="accessIP2" class="form-control" /></li>
+                                <li><input type="text" id="txtInsAccessIP3" name="accessIP3" class="form-control" /></li>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>상태</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="form-group">
+                            <input type="checkbox" id="chkInsUseFlag" name="useFlag" class="toggleFlag" data-on="Y" data-off="N">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right">
+                     <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                     <button type="button" id="btnInsAdmin" class="btn btn-danger">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END REGISTER MODAL AREA -->
+
+<!-- BEGIN EDIT MODAL AREA -->
+<div class="modal" id="divUpdAdminModal" tabindex="-1" role="dialog" aria-labelledby="labelUpdAdminModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" aria-hidden="true" data-dismiss="modal">x</button>
+                <br>
+                <i class="fa fa-pencil fa-2x"></i>
+                <h4 id="myModalLabelUpd" class="semi-bold">관리자 수정</h4>
+                <br>
+            </div>
+            <div class="modal-body">
+                <form id="frmUpdAdmin" name="frmUpdAdmin">
+                    <input type="hidden" id="hidUpdAdminNo" name="adminNo" class="form-control" />
+                    <div class="form-group">
+                        <label class="form-label"><span>관리자ID</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="txtUpdAdminId" name="adminId" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>관리자명</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="txtUpdAdminName" name="adminName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>휴대전화번호</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="txtUpdCelNo" name="phoneNo" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>이메일</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="txtUpdEmail" name="email" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>메뉴권한</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <select id="selUpdMenuRoleNo" name="menuRoleNo" class="select2 form-control">
+                                <option value="">전체</option>
+                                <option th:each="menuRole : ${menuRoleList}"
+                                        th:value="${menuRole.menuRoleNo}"
+                                        th:text="${menuRole.menuRoleName}"
+                                />
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">특정 액세스IP만 사용</label>
+                        <div class="form-group">
+                            <input type="checkbox" id="chkUpdAccessIPRestrictFlag" name="accessIPRestrictFlag" class="toggleFlag" data-on="Y" data-off="N">
+                        </div>
+                    </div>
+                    <div id="divUpdIPAddressArea" style="display:none;">
+                        <div class="form-group">
+                            <label class="form-label">접속 IP주소 3개까지 입력</label>
+                            <div class="list-inline">
+                                <i class=""></i>
+                                <li><input type="text" id="txtUpdAccessIP1" name="accessIP1" class="form-control" /></li>
+                                <li><input type="text" id="txtUpdAccessIP2" name="accessIP2" class="form-control" /></li>
+                                <li><input type="text" id="txtUpdAccessIP3" name="accessIP3" class="form-control" /></li>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>상태</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="form-group">
+                            <input type="checkbox" id="chkUpdUseFlag" name="useFlag" class="toggleFlag" data-on="Y" data-off="N">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right">
+                     <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                     <button type="button" id="btnUpdAdmin" class="btn btn-danger">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END EDIT MODAL AREA -->
+</th:block>
+<th:block layout:fragment="customJS">
+<!-- BEGIN CORE JS -->
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+
+    let objAdministratorTable;
+    const strMenu = "Admin";
+    const strMenuPath = '/administrator/administrator';
+    const strModeIns = /*[[${T(com.sandbox.settlement.common.constants.GlobalConstants).MODE_INS}]]*/ 'Ins'; // mode 관리 (Ins / Upd)
+    const strModeUpd = /*[[${T(com.sandbox.settlement.common.constants.GlobalConstants).MODE_UPD}]]*/ 'upd'; // mode 관리 (Ins / Upd)
+    let strMode = strModeIns;
+
+    $(function() {
+        fnSetValidate();
+        fnInitEvent();
+        fnCreateDataTables();
+    });
+
+    /**------------------------------------------------------------
+    * 관리자 등록/수정 유효성 이벤트
+    ------------------------------------------------------------*/
+    function fnSetValidate() {
+        const strInsFormID = "frm{0}{1}".format(strModeIns, strMenu);
+        const strUpdFormID = "frm{0}{1}".format(strModeUpd, strMenu);
+
+        const objInsValidate = {
+                FORMID   : strInsFormID,
+                VARIABLE : {
+                    adminId       : { required: true, maxlength:20, minlength:4, alphaNumeric:true },
+                    adminName     : { required: true },
+                    email         : { required: true, email:true },
+                    menuRoleNo    : { required: true }
+               }
+        }
+        COMMON.Utils.fnSetValidate(objInsValidate);
+
+        const objUpdValidate = {
+                FORMID   : strUpdFormID,
+                VARIABLE : {
+                    adminId       : { required: true, maxlength:20, minlength:4, alphaNumeric:true },
+                    adminName     : { required: true },
+                    email         : { required: true, email:true },
+                    menuRoleNo    : { required: true }
+               }
+        }
+        COMMON.Utils.fnSetValidate(objUpdValidate);
+    }
+
+    /**------------------------------------------------------------
+    * 이벤트
+    ------------------------------------------------------------*/
+    function fnInitEvent() {
+        // 접근 제한 IP 셋팅
+        C$("input[name^='accessIP").mask('0ZZ.0ZZ.0ZZ.0ZZ', {
+            translation: {
+                'Z': { pattern: /[0-9]/, optional: true }
+            },
+            onKeyPress: function(val, e, el, options) {
+                const match = val.match(/[0-9]+$/);
+                if(match) {
+                    const v = parseInt(match[0]);
+                    $(el).val(val.substr(0, match.index) + ((v >255) ? 255 : v));
+                }
+            },
+            placeholder: "___.___.___.___"
+        });
+
+        // '조회' 버튼 이벤트
+        C$("#btnSearch").on("click", function() {
+            fnCreateDataTables();
+        });
+
+        // '등록' 버튼 이벤트
+        C$("#btnRegist").on("click", function() {
+
+            strMode = strModeIns;
+
+            const strInsFormID = "#frm{0}{1}".format(strModeIns, strMenu);
+
+            fnClearFormDataEx(strInsFormID);
+
+            fnInsertSetting();
+        });
+
+        // '비밀번호 초기화' 버튼 이벤트
+        C$("#tblAdministrator").on("click", "button[id='btnUpdAdminPwd']", function() {
+            fnResetPwd(this);
+        });
+
+        // '수정' 버튼 이벤트
+        C$("#tblAdministrator").on("click", "button[id='btnUpdate']", function() {
+
+            strMode = strModeUpd;
+
+            const strUpdFormID = "#frm{0}{1}".format(strModeUpd, strMenu);
+
+            fnClearFormDataEx(strUpdFormID);
+
+            fnUpdateSetting(this);
+        });
+
+        C$(".sort_header").on("click", function() {
+            COMMON.Utils.fnSortSettings(this, $("#frmSearch"));
+        });
+
+        // '엑셀' 버튼 이벤트
+        C$("#btnExcel").on("click", function() {
+            const strConfirmMsg = '엑셀을 다운로드 하시겠습니까?';
+            if(confirm(strConfirmMsg)) {
+                const strExcelPath = strMenuPath + "/excelDownload";
+
+                COMMON.Utils.fnFileDownload("GET", $("#frmSearch").serializeObject(), strExcelPath);
+            }
+        });
+
+        // 특정 액세스IP 사용 토글 클릭 이벤트
+        C$("input[name='accessIPRestrictFlag']").on("change", function() {
+            const accessIPRestrictFlag = $(this).prop("checked");
+
+            const objSettings = C$("#frm{0}{1}".format(strMode, strMenu)).validate().settings;
+
+            C$("input[name^='accessIP").val("");
+
+            if(accessIPRestrictFlag) {
+                C$("#div{0}IPAddressArea".format(strMode)).show();
+
+                objSettings.rules.accessIP1 = {required: true};
+            } else {
+                C$("#div{0}IPAddressArea".format(strMode)).hide();
+
+                delete objSettings.rules.accessIP1;
+            }
+        });
+
+        // 모달 내 '저장', '변경' 버튼 이벤트
+        $("#btnInsAdmin, #btnUpdAdmin").on("click", function() {
+            if(!$("#frm{0}{1}".format(strMode, strMenu)).valid()) {
+                return;
+            }
+
+            fnEditAdministrator();
+        });
+    }
+
+    /**------------------------------------------------------------
+    * 관리자 리스트 조회
+    ------------------------------------------------------------*/
+    const fnCreateDataTables = function () {
+        if (typeof objAdministratorTable == "undefined") {
+            objAdministratorTable = COMMON.Ajax.CreateDataTable("#tblAdministrator", true, {
+                url: strMenuPath + '/getAdministratorList',
+                data: function () {
+                    return C$("#frmSearch").serializeObject();
+                },
+                columns: [
+                    { "data": "adminNo",            "class": "columnc" },
+                    { "data": "adminName",          "class": "columnc" },
+                    { "data": "adminId",            "class": "columnc" },
+                    { "data": "phoneNo",            "class": "columnc", "render": COMMON.Utils.fnPhoneFormatRender},
+                    { "data": "email",              "class": "columnc" },
+                    { "data": null,                 "class": "columnc", "render": fnRenderUseFlag},
+                    { "data": null,                 "class": "columnc", "render": fnRenderWork, "orderable": false }
+                ],
+                columnDefs :[
+                    {
+                        "targets": [6],
+                        "visible": COMMON.Auth.fnCheckHasAuth(/*[[${#request.getAttribute('authCode')}]]*/'', AUTHCODE.ALL)
+                    }
+                ]
+            });
+        } else {
+            objAdministratorTable.clearPipeline();
+            objAdministratorTable.ajax.reload();
+        }
+
+        C$("#div_searchResult").show();
+    }
+
+    /**------------------------------------------------------------
+    * 리스트 수정 랜더링 함수
+    ------------------------------------------------------------*/
+    function fnRenderWork(data, type, full, meta) {
+        let strHtml = "<button data-toggle='modal' id='btnUpdAdminPwd' title='reset' type='button' class='btn btn-danger btn-xs btn-mini auth-all'><i class='fa fa-undo'></i></button>"
+        strHtml += "&nbsp;&nbsp;";
+        strHtml += "<button id='btnUpdate' title='update' type='button' class='btn btn-primary btn-xs btn-mini auth-all'><i class='fa fa-edit'></i></button>";
+
+        return strHtml;
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 사용 여부 Render
+     ------------------------------------------------------------*/
+    function fnRenderUseFlag(data) {
+        return data.useFlag ? "사용" : "중지";
+    }
+
+    /**------------------------------------------------------------
+    * 관리자 등록/수정 함수
+    ------------------------------------------------------------*/
+    function fnEditAdministrator() {
+        const strCallUrl           = strMenuPath + "/saveAdministrator";
+        const strUpdAlertMsg       = '수정하시겠습니까?';
+        const strInsAlertMsg       = '등록하시겠습니까?';
+        const strAlertMsg          = strMode === strModeUpd ? strInsAlertMsg : strUpdAlertMsg;
+        const strSuccessMsg        = '작업이 완료되었습니다.';
+        const strErrorMsg          = '작업이 실패하었습니다.';
+        const accessIPRestrictFlag = C$("#chk{0}AccessIPRestrictFlag".format(strMode)).prop("checked");
+        const useFlag              = C$("#chk{0}UseFlag".format(strMode)).prop("checked");
+        const obj = {
+                requestData : {
+                    adminId              : C$("#txt{0}AdminId".format(strMode)).val(),
+                    adminNo              : C$("#hid{0}AdminNo".format(strMode)).val(),
+                    adminPwd             : fnGeneratePwd(),
+                    adminName            : C$("#txt{0}AdminName".format(strMode)).val(),
+                    phoneNo              : C$("#txt{0}CelNo".format(strMode)).val(),
+                    email                : C$("#txt{0}Email".format(strMode)).val(),
+                    menuRoleNo           : C$("#sel{0}MenuRoleNo".format(strMode)).val(),
+                    accessIPRestrictFlag : accessIPRestrictFlag,
+                    accessIP1            : accessIPRestrictFlag ? C$("#txt{0}AccessIP1".format(strMode)).val() : "",
+                    accessIP2            : accessIPRestrictFlag ? C$("#txt{0}AccessIP2".format(strMode)).val() : "",
+                    accessIP3            : accessIPRestrictFlag ? C$("#txt{0}AccessIP3".format(strMode)).val() : "",
+                    useFlag              : useFlag
+                },
+                strCallUrl      : strCallUrl,
+                strCallBack     : "fnCreateDataTables",
+                isModalMsg      : true,
+                strSuccessMsg   : strSuccessMsg,
+                strErrorMsg     : strErrorMsg
+        }
+
+        COMMON.Ajax.fnRequest(obj);
+
+        C$("#div{0}{1}Modal".format(strMode, strMenu)).modal("hide");
+    }
+
+    /**------------------------------------------------------------
+    * 등록 폼 세팅 함수
+    ------------------------------------------------------------*/
+    function fnInsertSetting() {
+        const strInsFormID = "#frm{0}{1}".format(strMode, strMenu);
+        const objSettings = C$(strInsFormID).validate().settings;
+
+        COMMON.Utils.fnFrmReset("frm{0}{1}".format(strMode, strMenu));
+
+        C$(".toggleFlag").bootstrapToggle();
+
+        const strLabel = '등록';
+        C$("#spn_frm_title").text(strLabel);
+
+        C$("#div{0}IPAddressArea".format(strMode)).hide();
+
+        C$("#txt{0}adminId".format(strMode)).prop("disabled", false);
+        C$("#chk{0}AccessIPRestrictFlag".format(strMode)).bootstrapToggle('off');
+        C$("#chk{0}UseFlag".format(strMode)).bootstrapToggle('on');
+
+        C$("#div{0}{1}Modal".format(strMode, strMenu)).modal("show");
+    }
+
+    /**------------------------------------------------------------
+    * 수정 폼 세팅 함수
+    ------------------------------------------------------------*/
+    function fnUpdateSetting(loc) {
+        const $objTr      = $(loc).parents('tr');
+        const data        = C$("#tblAdministrator").DataTable().row($objTr).data();
+
+        const strUpdFormID = "#frm{0}{1}".format(strMode, strMenu);
+        const objSettings = C$(strUpdFormID).validate().settings;
+
+        COMMON.Utils.fnFrmReset("frm{0}{1}".format(strMode, strMenu));
+
+        C$(".toggleFlag").bootstrapToggle();
+
+        const strLabel = '수정';
+        C$("#spn_frm_title").text(strLabel);
+
+        C$("#div{0}IPAddressArea".format(strMode)).hide();
+
+        C$("#hid{0}AdminNo".format(strMode)).val(data["adminNo"]);
+        C$("#txt{0}AdminId".format(strMode)).prop("disabled", true);
+        C$("#txt{0}AdminId".format(strMode)).val(data["adminId"]);
+        C$("#txt{0}AdminName".format(strMode)).val(data["adminName"]);
+        C$("#txt{0}CelNo".format(strMode)).val(data["phoneNo"]);
+        C$("#txt{0}Email".format(strMode)).val(data["email"]);
+        C$("#sel{0}MenuRoleNo".format(strMode)).select2("val", data["menuRoleNo"]);
+        C$("#chk{0}AccessIPRestrictFlag".format(strMode)).bootstrapToggle(data["accessIPRestrictFlag"] ? 'on' : 'off');
+        if(true === data["accessIPRestrictFlag"]){
+            C$("#txt{0}AccessIP1".format(strMode)).val(data["accessIP1"]);
+            C$("#txt{0}AccessIP2".format(strMode)).val(data["accessIP2"]);
+            C$("#txt{0}AccessIP3".format(strMode)).val(data["accessIP3"]);
+            C$("#div{0}IPAddressArea".format(strMode)).show();
+        }
+        C$("#chk{0}UseFlag".format(strMode)).bootstrapToggle(data["useFlag"] ? 'on' : 'off');
+
+        C$("#div{0}{1}Modal".format(strMode, strMenu)).modal("show");
+    }
+
+    /**------------------------------------------------------------
+    * 비밀번호 초기화 함수
+    ------------------------------------------------------------*/
+    function fnResetPwd(loc) {
+        const $objTr        = $(loc).parents('tr');
+        const data          = C$("#tblAdministrator").DataTable().row($objTr).data();
+        const strMsg        = '의 비밀번호를 초기화 하시겠습니까?';
+        const strAlertMsg   = data["adminId"] + strMsg;
+        const strSuccessMsg = '비밀번호 초기화 메일이 전송되었습니다.';
+        const strErrorMsg   = '작업이 실패하었습니다.';
+        const obj = {
+                requestData   : {
+                    adminNo : data["adminNo"],
+                    adminId : data["adminId"],
+                    email   : data["email"]
+                },
+                strCallUrl    : strMenuPath + "/resetAdministratorPwd",
+                strCallBack   : "fnCreateDataTables",
+                isModalMsg    : true,
+                strSuccessMsg : strSuccessMsg,
+                strErrorMsg   : strErrorMsg
+        }
+
+        COMMON.Msg.fnConfirm(strAlertMsg, function() {
+            COMMON.Ajax.fnRequest(obj);
+        });
+    }
+
+    /**------------------------------------------------------------
+    * 랜덤 영문자 리턴 함수
+    ------------------------------------------------------------*/
+    function fnGeneratePwd() {
+        const length = 8;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let retVal = "!0a";
+
+        for (let i=0, n=charset.length; i<length; ++i) {
+            retVal += charset.charAt(Math.floor(Math.random() * n));
+        }
+
+        return retVal;
+    }
+
+    /*]]>*/
+
+</script>
+<!-- END CORE JS -->
+</th:block>
+</html>

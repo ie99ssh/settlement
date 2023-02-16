@@ -1,0 +1,47 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 로그인 처리 영역
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <div th:fragment="loginProcFragment" class="row login-container column-seperation">
+        <div class="col-md-5 col-md-offset-1">
+            <img th:src="${@environment.getProperty('static.url') + '/Images/sd_favicon.png'}" alt="나연" style="height:200px; margin-top:-20px; margin-left:-35px;"/>
+            <h2 style="margin-top:-95px;"><th:block th:text="${@environment.getProperty('location')}"></th:block></h2>
+        </div>
+        <div class="col-md-5">
+            <br>
+            <form name="frmlogin" id="frmLogin" class="login-form validate">
+                <input type="hidden" id="ReturnUrl" name="strReturnUrl" value="">
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <label class="form-label">ID</label>
+                        <div class="controls">
+                            <div class="input-with-icon right">
+                                <i class=""></i>
+                                <input type="text" id="txtLoginId" name="strLoginId" class="form-control" maxlength="12" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <label class="form-label">PASSWORD</label>
+                        <div class="controls">
+                            <div class="input-with-icon right">
+                                <i class=""></i>
+                                <input type="password" id="txtPassword" name="strPassword" class="form-control" maxlength="20" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10">
+                        <button class="btn btn-primary btn-cons pull-right" type="button" id="btnLogin">Login</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</html>

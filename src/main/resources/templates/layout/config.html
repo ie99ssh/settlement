@@ -1,0 +1,100 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 공통 CSS, 공통 JS
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <!--/* 공통 Css */-->
+    <th:block th:fragment="common_css">
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-tag/bootstrap-tagsinput.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-datepicker/css/datepicker.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-timepicker/css/bootstrap-timepicker.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-datetimepicker/css/datetimepicker.min.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/ios-switch/ios7-switch.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-select2/select2.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/boostrap-clockpicker/bootstrap-clockpicker.min.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/pace/pace-theme-flash.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrapv3/css/bootstrap.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrapv3/css/bootstrap-theme.min.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/font-awesome/css/font-awesome.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/animate.min.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/jquery-scrollbar/jquery.scrollbar.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/jquery-nestable/jquery.nestable.min.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-toggle/bootstrap-toggle.min.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Css/jquery-ui.min.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Css/jquery.dataTables.min.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Css/dataTables.bootstrap.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/themes/default/style.min.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/ckeditor/contents.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Bootstrap/webarch/css/webarch.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Css/fullcalendar.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Css/fullcalendar.min.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Css/BOQAdmin.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/Css/custom.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/jqGrid/css/jquery-ui.min.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/jqGrid/css/ui.jqgrid.css'}" />
+        <link rel="stylesheet" th:href="${@environment.getProperty('static.url') + '/jqGrid/css/custom.css'}" />
+        <style>
+            .tooltip-inner {
+                max-width: 100% !important;
+            }
+        </style>
+
+    </th:block>
+    <!--/* 공통 JS */-->
+    <th:block th:fragment="common_js">
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/jquery-1.12.3.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/jquery-ui.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/jquery.ajax-retry.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/jquery.i18n.properties-min-1.0.9.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/jquery.dataTables.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/dataTables.bootstrap.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/dataTables.rowsGroup.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/Common.js?version=6'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/jstree.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/fullcalendar.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/fullcalendar.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/FileSaver.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/amcharts4/core.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/amcharts4/charts.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/amcharts4/themes/animated.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/pace/pace.min.js'}" type="text/javascript" ></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrapv3/js/bootstrap.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/jquery-block-ui/jqueryblockui.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/jquery-unveil/jquery.unveil.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/jquery-scrollbar/jquery.scrollbar.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/jquery-numberAnimate/jquery.animateNumbers.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/jquery-validation/js/jquery.validate.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/moment.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/jquery-inputmask/jquery.inputmask.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/jquery-mask/jquery.mask.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/jquery-autonumeric/autoNumeric.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/ios-switch/ios7-switch.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-select2/select2.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-tag/bootstrap-tagsinput.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/boostrap-clockpicker/bootstrap-clockpicker.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/dropzone/dropzone.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/webarch/js/webarch.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/jquery-file-download/js/jquery.fileDownload.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/jquery-sortable/jquery-sortable.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/Bootstrap/assets/plugins/bootstrap-toggle/bootstrap-toggle.min.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/ckeditor/ckeditor.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/ckeditor/adapters/jquery.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/ckeditor/build-config.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/ckeditor/config.js'}" type="text/javascript"></script>
+
+        <script th:src="${@environment.getProperty('static.url') + '/JsLib/jquery.blockUI.js'}" type="text/javascript"></script>
+
+        <script th:src="${@environment.getProperty('static.url') + '/jqGrid/js/i18n/grid.locale-kr.js'}" type="text/javascript"></script>
+        <script th:src="${@environment.getProperty('static.url') + '/jqGrid/js/jquery.jqGrid.min.js'}" type="text/javascript"></script>
+    </th:block>
+</html>

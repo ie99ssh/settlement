@@ -1,0 +1,118 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 관리자 로그인 실패 View
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="login/login">
+
+<th:block layout:fragment="content">
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <br>
+        <form id="frmPwdChange">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <br>
+                    <i class="fa fa-unlock-alt fa-2x"></i>
+                    <h4 id="modalPwdChange" class="semi-bold">비밀번호 초기화</h4>
+                    <br>
+                </div>
+                <div class="modal-body">
+                    <div class="row form-row">
+                        <div class="col-md-12">
+                            <div class="input-with-icon  right">
+                                <i class=""></i>
+                                <p>Admin ID : <span id="spAdminID" th:text="${adminId }"></span></p>
+                                <input type="hidden" id="hidToken" name="strToken" th:value="${token }"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row form-row">
+                        <div class="col-md-12">
+                            <div class="input-with-icon  right">
+                                <i class=""></i>
+                                <input class="form-control" type="password" id="txtNewPwd" name="strNewPwd" placeholder="새로운 비밀번호를 입력해 주십시오." maxlength="20">
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row form-row">
+                        <div class="col-md-12">
+                            <div class="input-with-icon  right">
+                                <i class=""></i>
+                                <input class="form-control" type="password" id="txtReNewPwd" name="strReNewPwd" placeholder="새로운 비밀번호를 다시 입력해 주십시오." maxlength="20">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnCancel" class="btn btn-default" data-dismiss="modal">취소</button>
+                    <button type="button" id="btnResetPwd" class="btn btn-danger">초기화</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</th:block>
+<th:block layout:fragment="customJS">
+<!-- BEGIN CORE JS -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $(function() {
+        fnSetInitAdminPwdFormValidate();
+        fnInitAdminPwdEvent();
+    });
+
+    /**------------------------------------------------------------
+     * 비밀번호 초기화 유효성 이벤트
+     ------------------------------------------------------------*/
+    function fnSetInitAdminPwdFormValidate() {
+        const arrValidate = {
+            FORMID   : "frmPwdChange",
+            VARIABLE : {
+                strNewPwd   : { required: true, maxlength:20, minlength:8, passwordCheck:true, pwCheckConsecChars:true },
+                strReNewPwd : { required: true, maxlength:20, minlength:8, equalTo:"#txtNewPwd", passwordCheck:true, pwCheckConsecChars:true }
+            }
+        }
+
+        COMMON.Utils.fnSetValidate(arrValidate);
+    }
+
+    function fnInitAdminPwdEvent() {
+        C$("#btnResetPwd").on("click", function() {
+            if(!C$("#frmPwdChange").valid()) {
+                return;
+            }
+
+            const obj = {
+                requestData  : {
+                    adminId  : C$("#spAdminID").text(),
+                    token    : C$("#hidToken").val(),
+                    newPwd   : C$("#txtNewPwd").val(),
+                    reNewPwd : C$("#txtReNewPwd").val()
+                },
+                strCallUrl   : "/administrator/administrator/resetPwd",
+                strCallBack  : "fnRedirect"
+            };
+
+            COMMON.Ajax.fnRequest(obj);
+        });
+
+        C$("#btnCancel").on("click", function() {
+            document.location.href = "/login";
+        });
+    }
+
+    function fnRedirect() {
+        const strAdminID = $("#spAdminID").text();
+        document.location.href = "/login?inpAdminID=" + strAdminID;
+    }
+    /*]]>*/
+</script>
+<!-- END CORE JS -->
+</th:block>
+</html>

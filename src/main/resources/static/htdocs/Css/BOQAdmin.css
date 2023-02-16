@@ -1,0 +1,96 @@
+@CHARSET "UTF-8";
+
+/* Modal Scrolling */
+.modal .modal-body {
+    max-height: 800px;
+    overflow-y: auto;
+}
+
+body.modal-open {
+	overflow: visible;
+}
+
+/* Cancelled */
+.tx-cancelled {
+	color: red;
+	font-weight: bold;
+}
+
+.tx-popup {
+	color: blue;
+	font-weight: bold;
+}
+
+/* autocomplete */
+.ui-autocomplete {
+    max-height: 150px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.grid-body Th{
+	text-transform:none;
+}
+
+/* custom checkbox for JsTree Start*/
+.customcheck {
+	display: inline;
+	position: relative;
+	padding-left: 20px;
+	margin-bottom: 12px;
+	cursor: pointer;
+	font-size: smaller;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.customcheck input {
+	position: absolute;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.checkmark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 14px;
+	width: 14px;
+	border-radius: 3px;
+}
+
+.check-background {
+	border: 1px solid #adb5bf;
+	background-color: #d2d9e0;
+}
+
+.check-border {
+	border: 1px solid #adb5bf;
+}
+
+.checkmark:after {
+	content: "";
+	position: absolute;
+	display: none;
+}
+
+.customcheck input:checked ~ .checkmark:after {
+	display: block;
+}
+
+.customcheck .checkmark:after {
+	left: 4px;
+	width: 5px;
+	height: 10px;
+	border: solid #54575a;
+	border-width: 0 3px 3px 0;
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
+/* custom checkbox for JsTree End*/
+
+/*select2 multiple*/
+select[multiple="multiple"] { display:none; }

@@ -1,0 +1,142 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 로그인 스크립트 처리 영역
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <script th:fragment="loginScriptFragment" th:inline="javascript">
+
+        /*<![CDATA[*/
+        $(function () {
+            fnInitEvent();
+            fnSetValidate();
+            fnInitForm();
+            fnSetInitPwdFormValidate();
+            fnInitPwdEvent();
+        });
+
+        function fnInitEvent() {
+            C$("#btnLogin").on("click", fnLoginProc);
+            C$(".form-control").on("keydown", function(event) {if (13 == event.which) fnLoginProc();});
+        }
+
+        function fnSetValidate() {
+            const arrValidate = {
+                FORMID   : "frmLogin",
+                VARIABLE : {
+                    txtID  : {minlength:6, maxlength: 20, required: true},
+                    txtPwd : {minlength:6, maxlength: 20, required: true}
+                }
+            }
+
+            COMMON.Utils.fnSetValidate(arrValidate);
+        }
+
+        function fnInitForm() {
+            C$("#txtID").focus();
+        }
+
+        function fnLoginProc() {
+            if (!C$("#frmLogin").valid()) {
+                return;
+            }
+
+            const obj = {
+                requestData : {
+                    adminId  : C$("#txtLoginId").val(),
+                    adminPwd : C$("#txtPassword").val()
+                },
+                strCallUrl  : "/login/loginProc",
+                strCallBack : "fnLoginProcRet"
+            }
+
+            COMMON.Ajax.fnRequest(obj);
+        }
+
+        function fnLoginProcRet(objJson) {
+            // 정상
+            if("0" == objJson.intRetCode) {
+                COMMON.Msg.fnLoginConfirm(objJson, function() {
+                    location.href = objJson.data.menuLink;
+                });
+            }
+            // 최종 로그인 일자 초과 (비밀번호 변경 Modal 호출)
+            else if("9005" == objJson.intRetCode) {
+                COMMON.Msg.fnAlert("현재 비밀번호 변경이 필요합니다. 비밀번호를 변경해 주십시오.", function() {
+                    C$('#btnModalPwdChange').click();
+                });
+            } else {
+                COMMON.Msg.fnAlert(objJson.strRetMsg);
+            }
+        }
+
+        function fnSetInitPwdFormValidate() {
+            const arrValidate = {
+                FORMID: "frmpw",
+                VARIABLE: {
+                    currPwd: {required: true, maxlength: 20, minlength: 8},
+                    newPwd: {
+                        required: true,
+                        maxlength: 20,
+                        minlength: 8,
+                        passwordCheck: true,
+                        pwCheckConsecChars: true
+                    },
+                    reNewPwd: {
+                        required: true,
+                        maxlength: 20,
+                        minlength: 8,
+                        equalTo: "#inpNewPwd",
+                        passwordCheck: true,
+                        pwCheckConsecChars: true
+                    }
+                }
+            }
+
+            COMMON.Utils.fnSetValidate(arrValidate);
+        }
+
+        function fnInitPwdEvent() {
+            C$("#btnChangePW").on("click", fnChangePwd);
+            C$("#btnCancel").on("click", function () {
+                document.location.href = "/login/login";
+            });
+            C$("#loginConfirmModal").on("keydown", function (event) {
+                if (13 == event.keyCode) {
+                    C$("#btnLoginConfirmModal").click();
+                }
+            });
+        }
+
+        function fnChangePwd() {
+            if (!C$("#frmpw").valid())
+                return;
+
+            const obj = {
+                requestData: {
+                    adminId: C$("#txtLoginId").val(),
+                    currPwd: C$("#inpCurrPwd").val(),
+                    newPwd: C$("#inpNewPwd").val(),
+                    reNewPwd: C$("#inpReNewPwd").val()
+                },
+                strCallUrl: "/administrator/administrator/changePwd",
+                strCallBack: "fnAdministratorPwdChgRet"
+            }
+
+            COMMON.Ajax.fnRequest(obj);
+        }
+
+        function fnAdministratorPwdChgRet(objJson) {
+            if (0 != objJson.retCode) {
+                COMMON.Msg.fnAlertWithModal("작업이 실패하였습니다.(" + objJson.retMsg + ")", "PWModal", true);
+            } else {
+                C$("input").val("");
+                C$("#PWModal").modal('hide');
+                COMMON.Msg.fnAlert("작업이 완료되었습니다.", function () {
+                    document.location.href = "/login/login";
+                });
+            }
+        }
+        /*]]>*/
+    </script>

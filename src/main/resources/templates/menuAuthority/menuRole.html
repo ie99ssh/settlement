@@ -1,0 +1,585 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 메뉴역할 View
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default">
+<th:block layout:fragment="content">
+<!-- BEGIN PAGE CONTAINER-->
+<div class="page-content">
+    <!-- BEGIN PAGE -->
+    <div class="content">
+        <div class="clearfix"></div>
+
+        <!-- BEGIN PAGE TITLE -->
+        <ul class="breadcrumb">
+            <li><p>YOU ARE HERE</p></li>
+            <li><a href="javascript:;" class="active" th:text="${#request.getAttribute('menuGroupName')}">메뉴그룹명</a>
+            </li>
+        </ul>
+        <div class="page-title"><i class="icon-custom-left"></i>
+            <h4><span class="semi-bold" th:text="${#request.getAttribute('menuName')}">메뉴명</span></h4>
+        </div>
+        <!-- END PAGE TITLE -->
+
+        <!-- BEGIN PAGE FORM -->
+        <div class="row">
+            <input id="hidMenuRoleNo" name="menuRoleNo" type="hidden" value=""/>
+            <input id="hidAddList" name="strAddList" type="hidden" value=""/>
+            <input id="hidRemoveList" name="strRemoveList" type="hidden" value=""/>
+            <input id="hidAllList" name="strAllList" type="hidden" value=""/>
+            <input id="hidReadList" name="strReadList" type="hidden" value=""/>
+        </div>
+        <div id="div_search" class="row">
+            <div class="col-md-12">
+                <div class="grid simple">
+                    <div class="grid-title no-border">
+                        <h4><i class="fa fa-th-large"></i><span>조회 결과</span></h4>
+                        <div class="tools"><a href="javascript:;" class="collapse"></a></div>
+                    </div>
+                    <div class="grid-body no-border">
+                        <div class="grid-body no-border">
+                            <div class="grid simple ">
+                                <div id="divGridArea" class="grid-body " style="display: none;">
+                                    <table class="table" id="tbMenuRole" width="100%">
+                                        <thead>
+                                        <tr>
+                                            <th>메뉴 역할 번호</th>
+                                            <th>접근 권한 명</th>
+                                            <th>등록자</th>
+                                            <th>사용 여부</th>
+                                            <th>등록 일시</th>
+                                            <th>수정 일시</th>
+                                            <th>작업</th>
+                                        </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                                <div class="panel panel-info auth-all">
+                                    <div class="panel-heading">
+                                        <button id="btnRegistMenuRole" type='button'
+                                                class='btn btn-circle btn-primary auth-all' data-toggle='modal'
+                                                data-target='#divEditMenuRole'><i class='fa fa-plus'></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END PAGE FORM -->
+    </div>
+    <!-- END PAGE -->
+</div>
+<!-- END CONTAINER -->
+
+<!-- BEGIN EDIT MODAL AREA -->
+<div class="modal" id="divEditMenuRole" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:50%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" aria-hidden="true" data-dismiss="modal">x</button>
+                <br>
+                <i id="iconRegist" class="fa fa-pencil fa-2x"></i>
+                <i id="iconEdit" class="fa fa-edit fa-2x" style="display:none;"></i>
+                <h4 id="myModalInsertMenuRole" class="semi-bold">메뉴 역할 등록</h4>
+                <h4 id="myModalUpdateMenuRole" class="semi-bold" style="display:none;">메뉴 역할 수정</h4>
+                <br>
+            </div>
+            <div class="modal-body">
+                <form id="frmEditMenuRole" name="frmEditMenuRole">
+                    <div class="form-group">
+                        <label class="form-label">접근 권한 명</label>
+                        <div class="input-with-icon  right">
+                            <i class=""></i>
+                            <input id="txtUpdMenuRoleName" name="menuRoleName" type="text" class="form-control"
+                                   maxlength="30"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <table id="tblMenuRoleDtl" class="table" width="100%">
+                            <thead>
+                            <tr>
+                                <th rowspan="2">메뉴 명</th>
+                                <th colspan="2">접근권한</th>
+                                <th rowspan="2" >
+                                    <span>중요정보</span><br>
+                                    <span>열람 여부</span></th>
+                                <th rowspan="2" >
+                                    <span>다운로드</span><br>
+                                    <span>가능 여부</span>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>등록/수정/읽기</th>
+                                <th>읽기전용</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">사용 여부</label>
+                        <div class="input-with-icon  right">
+                            <i class=""></i>
+                            <input type="checkbox" id="chkUseFlag" name="useFlag" data-toggle="toggle" data-on="Y"
+                                   data-off="N" checked>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right">
+                    <button type="button" id="btnEditMenuRoleModal" class="btn btn-danger auth-all">저장</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END EDIT MODAL AREA -->
+</th:block>
+<th:block layout:fragment="customJS">
+<!-- BEGIN CORE JS -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let objMenuRoleTable;
+    let objMenuRoleTableDtl;
+    const strMenuPath = '/menuAuthority/menuRole';
+
+    $(function () {
+        fnSetValidate();
+        fnInitEvent();
+        fnCreateDataTables();
+    });
+
+    /**------------------------------------------------------------
+     * Form Validate
+     ------------------------------------------------------------*/
+    function fnSetValidate() {
+        const arrValidate = {
+            FORMID: "frmEditMenuRole",
+            VARIABLE: {
+                menuRoleName: { required: true, maxlength: 30 }
+            }
+        }
+
+        COMMON.Utils.fnSetValidate(arrValidate);
+    }
+
+    /**------------------------------------------------------------
+     * Event
+     ------------------------------------------------------------*/
+    function fnInitEvent() {
+        C$("#btnRegistMenuRole").on("click", fnClickRegistMenuRole);
+        C$("#tbMenuRole").on("click", ".btnEditMenuRole", fnClickModifyMenuRoleWork);
+        C$("#tblMenuRoleDtl").on("click", ".checkboxAllRole", fnClickAccessRole);
+        C$("#tblMenuRoleDtl").on("click", ".checkboxReadRole", fnClickAccessRole);
+        C$("#tblMenuRoleDtl").on("click", ".checkboxCIRole", fnClickOtherRole);
+        C$("#tblMenuRoleDtl").on("click", ".checkboxDnRole", fnClickOtherRole);
+        C$("#btnEditMenuRoleModal").on("click", fnClickModifyMenuRole);
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 등록 Form Clear
+     ------------------------------------------------------------*/
+    function fnRegMenuRoleFormClear() {
+        const icon = $('.input-with-icon').children('i');
+        const parent = $('.input-with-icon');
+        const span = $('.input-with-icon').children('span');
+
+        icon.removeClass("fa fa-exclamation").removeClass('fa fa-check');
+        parent.removeClass('error-control').removeClass('success-control');
+        span.html("");
+
+        C$("#txtUpdMenuRoleName").val("");
+        C$("#tblMenuRoleDtl").find("input[type='checkbox']").prop("checked", false);
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 조회
+     ------------------------------------------------------------*/
+    function fnCreateDataTables() {
+        if (typeof objMenuRoleTable == "undefined") {
+            objMenuRoleTable = COMMON.Ajax.CreateDataTable("#tbMenuRole", false, {
+                url: strMenuPath + '/getAdminMenuRoleList',
+                data: function () {
+                },
+                columns: [
+                    {"data": "menuRoleNo", "class": "columnc"},
+                    {"data": "menuRoleName", "class": "columnc"},
+                    {"data": "regId", "class": "columnc"},
+                    {"data": null, "class": "columnc", "render": fnRenderUseFlag},
+                    {"data": "regDate", "class": "columnc"},
+                    {"data": "updDate", "class": "columnc"},
+                    {"data": null, "class": "columnc", "render": fnRenderWork},
+                ],
+                ordering: false,
+                paging: false,
+                dom: "rt"
+            });
+        } else {
+            objMenuRoleTable.clearPipeline();
+            objMenuRoleTable.ajax.reload();
+        }
+
+        C$("#divGridArea").show();
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 사용 여부 Render
+     ------------------------------------------------------------*/
+    function fnRenderUseFlag(data) {
+        return data.useFlag ? "Y" : "N";
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 리스트 수정 버튼 Render
+     ------------------------------------------------------------*/
+    function fnRenderWork(data) {
+        return `<button type='button' data-toggle='modal' data-target='#divEditMenuRole'
+                        data-menuroleno='${data.menuRoleNo}' data-menurolename='${data.menuRoleName}'
+                        data-useflag='${data.useFlag}' class='btn btn-primary btn-xs btn-mini auth-all btnEditMenuRole'>
+                        <i class='fa fa-edit'></i>
+                </button>`;
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 등록 메뉴 리스트 조회
+     ------------------------------------------------------------*/
+    function fnCreateDetailTable() {
+        if (typeof objMenuRoleTableDtl == "undefined") {
+            objMenuRoleTableDtl = COMMON.Ajax.CreateDataTable("#tblMenuRoleDtl", false, {
+                url: strMenuPath + '/getAdminMenuRoleDetailList',
+                data: function () {
+                    const objParam = {};
+                    objParam["menuRoleNo"] = C$("#hidMenuRoleNo").val();
+                    return objParam;
+                },
+                columns: [
+                    {"data": null, "class": "column35c", "render": fnRenderMenuName},
+                    {"data": null, "class": "columnc", "render": fnRenderAllCheckbox},
+                    {"data": null, "class": "columnc", "render": fnRenderReadCheckbox},
+                    {"data": null, "class": "columnc", "render": fnRenderCICheckbox},
+                    {"data": null, "class": "columnc", "render": fnRenderDLCheckbox}
+                ],
+                lengthChange: false,
+                displayLength: -1,
+                ordering: false,
+                paging: false,
+                dom: "rt"
+            });
+        } else {
+            objMenuRoleTableDtl.clearPipeline();
+            objMenuRoleTableDtl.ajax.reload();
+        }
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 등록 메뉴 명 Render
+     ------------------------------------------------------------*/
+    function fnRenderMenuName(data) {
+        if (data.depth === 1) {
+            return `<h5 align='left'><b>${data.menuName}</h5></b>`;
+        } else {
+            if (data.useFlag) {
+                return `<h5 align='left'>&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;${data.menuName}</h5>`;
+            } else {
+                return `<h5 align='left'>&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;${data.menuName}&nbsp<font color='red'>(미사용)</font></h5>`;
+            }
+        }
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 등록 전체 체크 박스 Render
+     ------------------------------------------------------------*/
+    function fnRenderAllCheckbox(data) {
+        const checkboxID = `cbAll_${data.menuGroupNo}_${data.menuNo}`;
+        const isCheck = (data.authCode === 1) ? "checked" : "";
+
+        let strHtml = "";
+
+        if (data.menuNo === "0") {
+            strHtml = `<a href='javascript:;' class='checkboxAllRole' data-menugroupno='${data.menuGroupNo}'
+                          data-menuno='${data.menuNo}'>
+                          <i class='fa fa-plus'></i>
+                       </a>`;
+        } else {
+            strHtml += `<div class='checkbox check-primary'>
+                             <input type='checkbox' id='${checkboxID}' class='checkboxAllRole'
+                                    data-menugroupno='${data.menuGroupNo}'
+                                    data-menuno='${data.menuNo}' ${isCheck} />
+                                    <label for='${checkboxID}'></label>
+                        </div>`;
+        }
+
+        return strHtml;
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 등록 읽기 체크 박스 Render
+     ------------------------------------------------------------*/
+    function fnRenderReadCheckbox(data) {
+        const checkboxID = `cbRead_${data.menuGroupNo}_${data.menuNo}`;
+        const isCheck = (data.authCode === 2) ? "checked" : "";
+        let strHtml;
+
+        if (data.menuNo === "0") {
+            strHtml = `<a href='javascript:;' class='checkboxReadRole' data-menugroupno='${data.menuGroupNo}'
+                          data-menuno='${data.menuNo}'>
+                          <i class='fa fa-plus'></i>
+                       </a>`;
+        } else {
+            strHtml = `<div class='checkbox check-warning'>
+                           <input type='checkbox' id='${checkboxID}' class='checkboxReadRole'
+                                  data-menugroupno='${data.menuGroupNo}' data-menuno='${data.menuNo}' ${isCheck} />
+                           <label for='${checkboxID}'></label>
+                       </div>`;
+        }
+
+        return strHtml;
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 등록 중요정보 열람여부 체크 박스 Render
+     ------------------------------------------------------------*/
+    function fnRenderCICheckbox(data) {
+        const checkboxID = "cbCI_" + data.menuGroupNo + "_" + data.menuNo;
+        const isCheck = data.ciReadFlag ? "checked" : "";
+
+        let strHtml = "";
+
+        if (data.menuNo === "0") {
+            strHtml = `<a href='javascript:;' class='checkboxCIRole' data-menugroupno='${data.menuGroupNo}'
+                          data-menuno='${data.menuNo}'>
+                          <i class='fa fa-plus'></i>
+                       </a>`;
+        } else {
+            strHtml = `<div class='checkbox check-info'>
+                           <input type='checkbox' id='${checkboxID}' class='checkboxCIRole'
+                                  data-menugroupno='${ data.menuGroupNo}'
+                                  data-menuno='${data.menuNo}' ${isCheck}/>
+                           <label for='${checkboxID}'></label>
+                       </div>`;
+        }
+
+        return strHtml;
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 등록 다운로드 가능여부 체크 박스 Render
+     ------------------------------------------------------------*/
+    function fnRenderDLCheckbox(data) {
+        const checkboxID = "cbDL_" + data.menuGroupNo + "_" + data.menuNo;
+        const isCheck = data.dnAvailFlag ? "checked" : "";
+
+        let strHtml = "";
+
+        if (data.menuNo === "0") {
+            strHtml = `<a href='javascript:;' class='checkboxDnRole' data-menugroupno='${data.menuGroupNo}'
+                          data-menuno='${data.menuNo}'>
+                          <i class='fa fa-plus'></i>
+                       </a>`;
+        } else {
+            strHtml = `<div class='checkbox check-info'>
+                           <input type='checkbox' id='${checkboxID}' class='checkboxDnRole'
+                                  data-menugroupno='${data.menuGroupNo}'
+                                  data-menuno='${data.menuNo}' ${isCheck} />
+                           <label for='${checkboxID}'></label>
+                       </div>`;
+        }
+
+        return strHtml;
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 신규 등록 이벤트
+     ------------------------------------------------------------*/
+    function fnClickRegistMenuRole() {
+        fnRegMenuRoleFormClear();
+
+        C$("#hidMenuRoleNo").val("");
+        C$("#txtUpdMenuRoleName").val("");
+        C$("#myModalInsertMenuRole").show();
+        C$("#myModalUpdateMenuRole").hide();
+        C$("#chkUseFlag").prop("checked", true).change();
+        C$("#iconRegist").show();
+        C$("#iconEdit").hide();
+
+        fnCreateDetailTable();
+    }
+
+    /**------------------------------------------------------------
+     * 메뉴 역할 수정(작업) 이벤트
+     ------------------------------------------------------------*/
+    function fnClickModifyMenuRoleWork(event) {
+        fnRegMenuRoleFormClear();
+
+        const $this = $(event.currentTarget);
+
+        const menuRoleNo = $this.data("menuroleno");
+        const menuRoleName = $this.data("menurolename");
+        const intMenuRoleUseFlag = $this.data("useflag");
+
+        C$("#divMerAuthType").hide();
+        C$("#myModalInsertMenuRole").hide();
+        C$("#myModalUpdateMenuRole").show();
+
+        C$("#hidMenuRoleNo").val(menuRoleNo);
+        C$("#txtUpdMenuRoleName").val(menuRoleName);
+        C$("#chkUseFlag").prop("checked", intMenuRoleUseFlag).change();
+
+        C$("#iconRegist").hide();
+        C$("#iconEdit").show();
+
+        fnCreateDetailTable();
+
+        event.preventDefault();
+    }
+
+    /**------------------------------------------------------------
+     * 전체/읽기 checkbox 이벤트
+     ------------------------------------------------------------*/
+    function fnClickAccessRole(event) {
+        const $this = $(event.currentTarget);
+        const strSelectClass = "." + event.currentTarget.className;
+        const strOtherClass = (event.currentTarget.className === "checkboxAllRole") ? ".checkboxReadRole" : ".checkboxAllRole";
+        const menuGroupNo = $this.data("menugroupno");
+        const menuNo = $this.data("menuno");
+        const menuGroupNoObj = `input${strSelectClass}[data-menugroupno='${menuGroupNo}']`;
+        const otherMenuGroupNoObj = `input${strOtherClass}[data-menugroupno='${menuGroupNo}']`;
+        const otherMenuNoObj = `${strOtherClass}[data-menuno='${menuNo}']`;
+        let isAllChecked = true;
+
+        // 대 메뉴
+        if (menuNo === 0) {
+            C$('#tblMenuRoleDtl').find(menuGroupNoObj).each(function () {
+                isAllChecked = $(this).prop("checked");
+                return false;
+            });
+            C$('#tblMenuRoleDtl').find(menuGroupNoObj).prop("checked", isAllChecked);
+            C$('#tblMenuRoleDtl').find(otherMenuGroupNoObj).prop("checked", false);
+        } else {
+            C$('#tblMenuRoleDtl').find(otherMenuNoObj).prop("checked", false);
+        }
+    }
+
+    /**------------------------------------------------------------
+     * CI/DL checkbox 이벤트
+     ------------------------------------------------------------*/
+    function fnClickOtherRole(event) {
+        const $this = $(event.currentTarget);
+        const strSelectClass = "." + event.currentTarget.className;
+        const menuGroupNo = $this.data("menugroupno");
+        const menuNo = $this.data("menuno");
+        const menuGroupNoObj = `input${strSelectClass}[data-menugroupno='${menuGroupNo}']`;
+        let isAllChecked = true;
+
+        // 대 메뉴
+        if (menuNo === 0) {
+            C$('#tblMenuRoleDtl').find(menuGroupNoObj).each(function () {
+                isAllChecked = $(this).prop("checked");
+                return false;
+            });
+            C$('#tblMenuRoleDtl').find(menuGroupNoObj).prop("checked", isAllChecked);
+        }
+    }
+
+    /**------------------------------------------------------------
+     * 역할 등록/수정 버튼(모달)
+     ------------------------------------------------------------*/
+    function fnClickModifyMenuRole(event) {
+        let intChkCnt = 0;
+        const arrMenuRoleDtlList = [];
+
+        if (!C$("#frmEditMenuRole").valid()) {
+            return;
+        }
+
+        C$("#tblMenuRoleDtl").find("input[type=checkbox]").each(function () {
+            if (this.checked) {
+                intChkCnt++;
+            }
+        });
+
+        if (intChkCnt <= 0) {
+            const strAlertMsg = '메뉴를 선택해 주십시오.';
+            COMMON.Msg.fnAlertWithModal(strAlertMsg, "divEditMenuRole", true);
+            return false;
+        }
+
+        C$("#tblMenuRoleDtl").find("tbody tr").each(function () {
+            // 메뉴 그룹 row 패스
+            const $this = $(this);
+            const menuNo = $this.find(".checkboxAllRole").data("menuno");
+            if (menuNo == 0) {
+                return true;
+            }
+
+            let authCode;
+            const isALlRole = $this.find(".checkboxAllRole").prop("checked");
+            const isReadRole = $this.find(".checkboxReadRole").prop("checked");
+            const isCIFlag = $this.find(".checkboxCIRole").prop("checked");
+            const isDnFlag = $this.find(".checkboxDnRole").prop("checked");
+
+            if (!isALlRole && !isReadRole && !isCIFlag && !isDnFlag) {
+                return true;
+            }
+
+            if (isALlRole) {
+                authCode = 1;
+            } else if (isReadRole) {
+                authCode = 2;
+            } else {
+                authCode = 99;
+            }
+
+            const objMenuRoleDtl = {};
+            objMenuRoleDtl["menuRoleNo"] = C$("#hidMenuRoleNo").val();
+            objMenuRoleDtl["menuNo"] = menuNo;
+            objMenuRoleDtl["authCode"] = authCode;
+            objMenuRoleDtl["ciReadFlag"] = isCIFlag;
+            objMenuRoleDtl["dnAvailFlag"] = isDnFlag;
+
+            arrMenuRoleDtlList.push(objMenuRoleDtl);
+        });
+
+        const strSuccessMsg = '작업이 완료되었습니다.';
+        const strErrorMsg   = '작업이 실패하었습니다.';
+
+        const obj = {
+            requestData: {
+                menuRoleNo: C$("#hidMenuRoleNo").val(),
+                menuRoleName: C$('#txtUpdMenuRoleName').val(),
+                useFlag: C$("#chkUseFlag").prop("checked"),
+                menuRoleList: arrMenuRoleDtlList
+            },
+            strCallUrl    : strMenuPath + "/saveAdminMenuRole",
+            strCallBack   : "fnUpdateMenuRoleRet",
+            isModalMsg    : true,
+            strSuccessMsg : strSuccessMsg,
+            strErrorMsg   : strErrorMsg
+        }
+
+        COMMON.Ajax.fnRequest(obj);
+    }
+
+    /**------------------------------------------------------------
+     * 역할 등록/수정 결과
+     ------------------------------------------------------------*/
+    function fnUpdateMenuRoleRet(objJson) {
+        C$('#divEditMenuRole').modal("hide");
+
+        if (objJson.intRetCode === 0) {
+            objMenuRoleTable.ajax.reload();
+        }
+    }
+    /*]]>*/
+</script>
+<!-- END CORE JS -->
+</th:block>
+</html>

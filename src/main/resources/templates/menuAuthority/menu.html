@@ -1,0 +1,515 @@
+<!------------------------------------------------------------------------
+# Author : sangheon@payletter.com@payletter.com
+# Desc   : 메뉴 View
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default">
+
+<th:block layout:fragment="content">
+<!-- BEGIN PAGE CONTAINER-->
+<div class="page-content">
+    <!-- BEGIN PAGE -->
+    <div class="content">
+        <div class="clearfix"></div>
+
+        <!-- BEGIN PAGE TITLE -->
+        <ul class="breadcrumb">
+            <li><p>YOU ARE HERE</p></li>
+            <li><a href="javascript:;" class="active" th:text="${#request.getAttribute('menuGroupName')}">메뉴그룹명</a></li>
+        </ul>
+        <div class="page-title"> <i class="icon-custom-left"></i>
+            <h4><span class="semi-bold" th:text="${#request.getAttribute('menuName')}">메뉴명</span></h4>
+        </div>
+        <!-- END PAGE TITLE -->
+
+        <!-- BEGIN PAGE FORM -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="grid simple">
+                    <div class="grid-title no-border">
+                        <h4><i class="fa fa-th-large"></i><span>조회 조건</span></h4>
+                        <div class="tools"><a href="javascript:;" class="collapse"></a></div>
+                    </div>
+                    <div class="grid-body no-border">
+                        <form id="frmSearchMenu" name="frmSearchMenu">
+                            <div class="row form-row">
+                                <div class="col-md-3">
+                                    <label class="form-label"></label>
+                                    <select name="menuGroupNo" id="selMenuGroupNo" class="select2 form-control">
+                                        <option value="" selected>선택</option>
+                                        <option th:each="menuGroup : ${menuGroupList}" th:value="${menuGroup.menuGroupNo}" th:text="${menuGroup.menuGroupName}" />
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="div_search" class="row">
+            <div class="col-md-12">
+                <div class="grid simple">
+                    <div class="grid-title no-border">
+                        <h4><i class="fa fa-th-large"></i><span>조회 결과</span></h4>
+                        <div class="tools"><a href="javascript:;" class="collapse"></a></div>
+                    </div>
+                    <div class="grid-body no-border">
+                        <div class="grid simple ">
+                            <div id="divGridArea" class="grid-body " style="display:none;">
+                                <table class="table" id="tbMenu">
+                                    <thead>
+                                        <tr>
+                                            <th>순서</th>
+                                            <th>NO</th>
+                                            <th>메뉴 명</th>
+                                            <th>메뉴 링크</th>
+                                            <th>메뉴 설명</th>
+                                            <th>상태</th>
+                                            <th>관리자 아이디</th>
+                                            <th>등록 일시</th>
+                                            <th>수정 일시</th>
+                                            <th>작업</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <br />
+                                <div class="panel panel-info auth-all">
+                                    <div class="panel-heading">
+                                        <button id="btnRegistMenu" title='Insert' type='button' class='btn btn-circle btn-primary' data-toggle='modal' data-target='#divEditMenuModal'><i class='fa fa-plus'></i></button> &nbsp;
+                                        <button id="btnEditMenuList" title='Save' type='button' class='btn btn-circle btn-primary'><i class='fa fa-save'></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END PAGE FORM -->
+    </div>
+    <!-- END PAGE -->
+</div>
+<!-- END PAGE CONTAINER-->
+
+<!-- BEGIN EDIT MODAL AREA -->
+<div class="modal" id="divEditMenuModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" aria-hidden="true" data-dismiss="modal">x</button>
+                <br>
+                <i class="fa fa-pencil fa-2x"></i>
+                <h4 id="myModalLabel" class="semi-bold">메뉴 등록</h4>
+                <br>
+            </div>
+            <div id="div_frm" class="modal-body">
+                <form id="frmEditMenu" name="frmEditMenu">
+                    <input type="hidden" id="hidInsMenuNo" name="menuNo" />
+                    <input type="hidden" id="hidInsMenuGroupNo" name="menuGroupNo" />
+                    <div class="form-group">
+                        <label class="form-label">메뉴 그룹 명</label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="txtInsMenuGroupName" name="menuGroupName" class="form-control" disabled="disabled">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">메뉴 명</label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="txtInsMenuName" data-toggle="tooltip" title="" name=menuName class="form-control" maxlength="50"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">메뉴 Link</label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="txtInsMenuLink" name="menuLink" class="form-control" maxlength="100"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">메뉴 URI Segment</label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="txtInsMenuDivSegment" name="menuDivSegment" class="form-control" maxlength="100" required/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">메뉴 설명</label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <textarea id="txtInsMenuDesc" name="menuDesc" cols="88" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">사용 여부</label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="checkbox" id="chkUseFlag" name="useFlag" data-toggle="toggle" data-on="Y" data-off="N" checked>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right">
+                     <button type="button" id="btnSaveMenuModal" class="btn btn-danger">저장</button>
+                     <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END EDIT MODAL AREA -->
+</th:block>
+<th:block layout:fragment="customJS">
+<!-- BEGIN CORE JS -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let objMenuTable;
+    const strMenuPath = '/menuAuthority/menu';
+
+    $(function() {
+        fnSetValidate();
+        fnInitEvent();
+    });
+
+    /**------------------------------------------------------------
+    * Form Validate
+    ------------------------------------------------------------*/
+    function fnSetValidate () {
+        const arrValidate = {
+            FORMID   : "frmEditMenu",
+            VARIABLE : {
+                menuName       : { required: true, maxlength:50 },
+                menuLink       : { required: true, maxlength:100 },
+                menuDivSegment   : { required: true, maxlength:256 },
+                txtInsMenuDesc : { required: true, maxlength:256 },
+            }
+        }
+        COMMON.Utils.fnSetValidate(arrValidate);
+    }
+
+    /**------------------------------------------------------------
+    * Event
+    ------------------------------------------------------------*/
+    function fnInitEvent(){
+        C$("#tbMenu").on("click", ".sortUp", fnClickSortOrderUp);
+        C$("#tbMenu").on("click", ".sortDown", fnClickSortOrderDown);
+        C$("#tbMenu").on("click", ".btnEditMenuWork", fnClickEditWork);
+        C$("#tbMenu").on("click", ".btnDelMenuWork", fnClickDeleteWork);
+        C$("#selMenuGroupNo").on("change", fnChangeMenuGroup);
+        C$("#btnRegistMenu").on("click", fnClickRegistMenu);
+        C$("#btnSaveMenuModal").on("click", fnClickSaveMenuModal);
+        C$("#btnEditMenuList").on("click", fnClickEditMenuList);
+    }
+
+    /**------------------------------------------------------------
+    * 메뉴 리스트 조회
+    ------------------------------------------------------------*/
+    function fnCreateDataTables () {
+        if (typeof objMenuTable == "undefined") {
+            objMenuTable = COMMON.Ajax.CreateDataTable("#tbMenu", false, {
+                url: strMenuPath + '/getAdminMenuList',
+                data: function () {
+                    return C$("#frmSearchMenu").serializeObject();
+                },
+                columns: [
+                    { "data": null,       "class": "columnc", "render": fnRenderSortOrder },
+                    { "data": "menuNo",   "class": "columnc" },
+                    { "data": null,       "class": "columnc", "render": fnRenderMenuName },
+                    { "data": "menuLink", "class": "columnc" },
+                    { "data": "menuDesc", "class": "columnc" },
+                    { "data": null,       "class": "columnc", "render": fnRenderStatus },
+                    { "data": "regId",    "class": "columnc" },
+                    { "data": "regDate",  "class": "columnc" },
+                    { "data": "updDate",  "class": "columnc" },
+                    { "data": null,       "class": "columnc", "render": fnRenderWork }
+                ],
+                ordering: false,
+                paging: false,
+                dom: "rt",
+                fnDrawCallback: function(settings) {
+                    fnBootstrapToggle();
+                }
+            });
+        } else {
+            objMenuTable.clearPipeline();
+            objMenuTable.ajax.reload();
+        }
+
+        C$("#divGridArea").show();
+    }
+
+    /**------------------------------------------------------------
+    * 메뉴 그룹 리스트 명 Render
+    ------------------------------------------------------------*/
+    function fnRenderMenuName(data) {
+        return `<span data-menuno='${data.menuNo}'>${data.menuName}</span>`;
+    }
+
+    /**------------------------------------------------------------
+    * 메뉴 리스트 정렬 Render
+    ------------------------------------------------------------*/
+    function fnRenderSortOrder(data) {
+        let strHtml = "";
+
+        strHtml += `<a href='javascript:;' class='sortUp'>
+                        <i class='fa fa-angle-up fa-2x' style=''></i>
+                        </a>
+                        &nbsp;&nbsp;&nbsp;<a href='javascript:;' class='sortDown'>
+                        <i class='fa fa-angle-down fa-2x' style=''></i>
+                    </a>`;
+
+        return strHtml;
+    }
+
+    /**------------------------------------------------------------
+    * 메뉴 리스트 상태 Render
+    ------------------------------------------------------------*/
+    function fnRenderStatus(data) {
+
+        const useFlag = data.useFlag ? "checked" : "";
+
+        return `<input type='checkbox' class='chkUseFlag' data-toggle='toggle' data-on='Y' data-off='N' ${useFlag}>`;
+    }
+
+    /**------------------------------------------------------------
+    * 메뉴 리스트 작업 Render
+    ------------------------------------------------------------*/
+    function fnRenderWork(data) {
+        let strHtml = `<button type='button' title='Edit' data-toggle='modal'
+                               data-target='#divEditMenuModal' data-menuno='${data.menuNo}'
+                               class='btn btn-primary btn-xs btn-mini auth-all btnEditMenuWork'><i class='fa fa-pencil'></i>
+                       </button>
+                       &nbsp;&nbsp;
+                       <button type='button' title='Delete' data-menuno='${data.menuNo}'
+                               data-menusort='${data.sortOrder}' class='btn btn-danger btn-xs btn-mini auth-all btnDelMenuWork'>
+                               <i class='fa fa-trash-o'></i>
+                       </button>`;
+        return strHtml;
+    }
+
+    /**------------------------------------------------------------
+    * 메뉴 등록/수정 결과
+    ------------------------------------------------------------*/
+    function fnSaveAdminMenuRet(objJson){
+        C$('#divEditMenuModal').modal("hide");
+
+        if (objJson.intRetCode === 0) {
+            objMenuTable.ajax.reload();
+        }
+    }
+
+    /**------------------------------------------------------------
+    * 메뉴 목록 수정 결과
+    ------------------------------------------------------------*/
+    function fnSaveAdminMenuList(objJson) {
+        if (objJson.intRetCode === 0) {
+            objMenuTable.ajax.reload();
+        }
+    }
+
+    /**------------------------------------------------------------
+    * 메뉴 수정(작업) 버튼 클릭 결과
+    ------------------------------------------------------------*/
+    function fnGetAdminMenuRet(objJson) {
+        if (objJson.intRetCode !== 0) {
+            C$('#divEditMenuModal').modal("hide");
+
+            COMMON.Msg.fnAlert(objJson.strRetMsg);
+        } else {
+            C$("#txtInsMenuName").val(objJson.data.menuName);
+            C$("#txtInsMenuLink").val(objJson.data.menuLink);
+            C$("#txtInsMenuDivSegment").val(objJson.data.menuDivSegment);
+            C$("#chkUseFlag").prop("checked", objJson.data.useFlag).change();
+            C$("#txtInsMenuDesc").val(objJson.data.menuDesc);
+        }
+    }
+
+    /**------------------------------------------------------------
+    * 메뉴 그룹 조회 조건 변경 이벤트
+    ------------------------------------------------------------*/
+    function fnChangeMenuGroup() {
+        const menuGroupNo = C$("#selMenuGroupNo").find("option:selected").val();
+
+        if (menuGroupNo === "0" || menuGroupNo === "") {
+            C$("#hidInsMenuGroupNo").val("");
+            C$("#divGridArea").hide();
+        } else {
+            C$("#hidInsMenuGroupNo").val(menuGroupNo);
+            C$("#divGridArea").show();
+
+            fnCreateDataTables();
+        }
+    }
+
+    /**------------------------------------------------------------
+    * 리스트 순서 변경 이벤트(UP)
+    ------------------------------------------------------------*/
+    function fnClickSortOrderUp(event) {
+        const $tr = $(event.currentTarget).closest("tr");
+        $tr.prev().before($tr);
+    }
+
+    /**------------------------------------------------------------
+    * 리스트 순서 변경 이벤트(DOWN)
+    ------------------------------------------------------------*/
+    function fnClickSortOrderDown(event) {
+        const $tr = $(event.currentTarget).closest("tr");
+        $tr.next().after($tr);
+    }
+
+    /**------------------------------------------------------------
+    * 수정 클릭 이벤트(작업)
+    ------------------------------------------------------------*/
+    function fnClickEditWork(event) {
+        COMMON.Utils.fnFrmReset("frmEditMenu");
+
+        const menuNo        = $(event.currentTarget).data("menuno");
+        const modalLabel    = '메뉴 수정';
+        const strSuccessMsg = '작업이 완료되었습니다.';
+        const strErrorMsg   = '작업이 실패하었습니다.';
+
+        C$("#hidInsMenuNo").val(menuNo);
+        C$("#hidInsMenuGroupNo").val(C$("#selMenuGroupNo").find("option:selected").val());
+        C$("#myModalLabel").text(modalLabel);
+        C$("#txtInsMenuGroupName").val(C$("#selMenuGroupNo").find("option:selected").text());
+
+        const obj = {
+            requestData: {
+                menuNo: menuNo
+            },
+            strCallUrl    : strMenuPath + "/getAdminMenu",
+            strCallBack   : "fnGetAdminMenuRet",
+            isModalMsg    : false,
+            strSuccessMsg : strSuccessMsg,
+            strErrorMsg   : strErrorMsg
+        }
+
+        COMMON.Ajax.fnRequest(obj);
+    }
+
+    /**------------------------------------------------------------
+    * 삭제 클릭 이벤트(작업)
+    ------------------------------------------------------------*/
+    function fnClickDeleteWork(event) {
+        const $this         = $(event.currentTarget);
+        const menuNo        = $this.data("menuno");
+        const sortOrder     = $this.data("menusort");
+        const menuGroupNo   = C$("#selMenuGroupNo").children('option').filter(':selected').val();
+
+        const strConfirmMsg = '삭제하시겠습니까?';
+        const strSuccessMsg = '작업이 완료되었습니다.';
+        const strErrorMsg   = '작업이 실패하었습니다.';
+
+        COMMON.Msg.fnConfirm(strConfirmMsg, function () {
+            const obj = {
+                requestData: {
+                    menuNo      : menuNo,
+                    sortOrder   : sortOrder,
+                    menuGroupNo : menuGroupNo
+                },
+                strCallUrl    : strMenuPath + "/deleteAdminMenu",
+                strCallBack   : "fnSaveAdminMenuList",
+                isModalMsg    : true,
+                strSuccessMsg : strSuccessMsg,
+                strErrorMsg   : strErrorMsg
+            }
+
+            COMMON.Ajax.fnRequest(obj);
+        });
+    }
+
+    /**------------------------------------------------------------
+    * 등록 클릭 이벤트
+    ------------------------------------------------------------*/
+    function fnClickRegistMenu(event) {
+        COMMON.Utils.fnFrmReset("frmEditMenu");
+
+        const modalLabel = '메뉴 등록';
+
+        C$("#hidInsMenuGroupNo").val(C$("#selMenuGroupNo").find("option:selected").val());
+        C$("#myModalLabel").text(modalLabel);
+
+        C$("#txtInsMenuGroupName").val(C$("#selMenuGroupNo").find("option:selected").text());
+    }
+
+    /**------------------------------------------------------------
+    * 저장 클릭 이벤트(modal)
+    ------------------------------------------------------------*/
+    function fnClickSaveMenuModal(event) {
+        if (!C$("#frmEditMenu").valid()) {
+            return;
+        }
+
+        const sObj = C$("#frmEditMenu").serializeObject();
+        sObj.useFlag = C$("#chkUseFlag").prop("checked");
+
+        const strSuccessMsg = '작업이 완료되었습니다.';
+        const strErrorMsg   = '작업이 실패하었습니다.';
+
+        const obj = {
+            requestData   : sObj,
+            strCallUrl    : strMenuPath + "/saveAdminMenu",
+            strCallBack   : "fnSaveAdminMenuRet",
+            isModalMsg    : true,
+            strSuccessMsg : strSuccessMsg,
+            strErrorMsg   : strErrorMsg
+        }
+
+        COMMON.Ajax.fnRequest(obj);
+    }
+
+    /**------------------------------------------------------------
+    * 메뉴 리스트 저장 클릭 이벤트(modal)
+    ------------------------------------------------------------*/
+    function fnClickEditMenuList(event) {
+
+        const strConfirmMsg = '수정하시겠습니까?';
+        const strSuccessMsg = '작업이 완료되었습니다.';
+        const strErrorMsg   = '작업이 실패하었습니다.';
+
+        COMMON.Msg.fnConfirm(strConfirmMsg, function () {
+            const objParam      = {};
+            const arrMenuList   = [];
+            let sortOrder     = 1;
+
+            C$("#tbMenu").find("tbody tr").each(function () {
+                const objMenu = {};
+                objMenu["menuNo"]    = $(this).find("td:eq(2) span").data("menuno");
+                objMenu["sortOrder"] = sortOrder++;
+                objMenu["useFlag"]   = $(this).find("td:eq(5) input").prop("checked");
+
+                arrMenuList.push(objMenu);
+            });
+
+            const obj = {
+                requestData: {
+                    menuList: arrMenuList
+                },
+                strCallUrl    : strMenuPath + "/saveAdminMenuList",
+                strCallBack   : "fnSaveAdminMenuList",
+                isModalMsg    : true,
+                strSuccessMsg : strSuccessMsg,
+                strErrorMsg   : strErrorMsg
+            }
+
+            COMMON.Ajax.fnRequest(obj);
+        });
+    }
+
+    /**------------------------------------------------------------
+    * bootstrap toggle 세팅
+    ------------------------------------------------------------*/
+    function fnBootstrapToggle() {
+        $(".chkUseFlag").bootstrapToggle();
+    }
+    /*]]>*/
+</script>
+<!-- END CORE JS -->
+</th:block>
+</html>

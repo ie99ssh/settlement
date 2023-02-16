@@ -1,0 +1,166 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 기본 스크립트 영역
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <script th:fragment="scriptFragment" th:inline="javascript">
+
+        /*<![CDATA[*/
+        $(function(){
+            fnSetInitPwdFormValidate();
+            fnEvent();
+            C$("body .table thead tr th").attr("style", "font-weight:bold; border:1px solid #ddd; background-color:#ecf0f2; text-align:center;");
+        });
+
+        function fnSetInitPwdFormValidate() {
+            var arrValidate = {
+                FORMID   : "frmPwdChange",
+                VARIABLE : {
+                    currPwd  : { required: true, maxlength:20, minlength:8 },
+                    newPwd   : { required: true, maxlength:20, minlength:8, passwordCheck:true, pwCheckConsecChars:true },
+                    reNewPwd : { required: true, maxlength:20, minlength:8, equalTo:"#inpNewPwd", passwordCheck:true, pwCheckConsecChars:true }
+                }
+            }
+
+            COMMON.Utils.fnSetValidate(arrValidate);
+        }
+
+        function fnEvent() {
+            $("body .table thead tr th").attr("style", "font-weight:bold; border:1px solid #ddd; background-color:#ecf0f2; text-align:center;");
+            $("body .table").attr("style", "width: 100%;border-bottom:1px solid #ddd;");
+            $("body .fixedtable").attr("style", "width: 1560px;border-bottom:1px solid #ddd;");
+
+            $(".modal").on("shown.bs.modal", function() {
+                $(".modal-body").scrollTop(0);
+            });
+
+            // 메뉴 조정 관련
+            $(window).resize(function(){
+                var intWindowSize = $(window).width();
+
+                if(768 <= intWindowSize && 1024 >= intWindowSize){
+                    $("#main-menu-wrapper ul li ul").each(function(intCount){
+                        var strClassName = $(this).attr("class").trim();
+
+                        if(strClassName == "sub-menu"){
+                            $(this).css("display", "none");
+                        }
+                    })
+                }
+
+                if(1024 <= intWindowSize){
+                    $("#main-menu-wrapper ul li ul").each(function(intCount){
+                        var strClassName = $(this).attr("class").trim();
+                        var strSelectMenu = $(this).parent().attr("class");
+
+                        if(strClassName == "sub-menu" && strSelectMenu == "start open"){
+                            $(this).css("display", "block");
+                        }
+                    })
+                }
+            });
+
+            // 공통 Alert
+            $("#btnAlertModalTop, #btnAlertModalBottom").on("click", function () {
+                $('#alertModal').modal('hide');
+
+                if (strPreModalId != "" && strPreModalId != undefined && isPreModalOpen == true) {
+                    $('#' + strPreModalId).modal('show');
+                    strPreModalId = "";
+                } else {
+                    //COMMON.Msg.fnResetBodyClass();
+                }
+            });
+
+            // 공통 Confirm
+            $("#btnConfirmModalTop, #btnConfirmModalBottom").on("click", function () {
+                $('#confirmModal').modal('hide');
+
+                try {
+                    if (strPreModalId != "" && strPreModalId != undefined && isPreModalOpen == true) {
+                        $('#' + strPreModalId).modal('show');
+                        strPreModalId = "";
+                    } else {
+                        COMMON.Msg.fnResetBodyClass();
+                    }
+                } catch (ex) {
+                    COMMON.Msg.fnResetBodyClass();
+                }
+            });
+
+            // Header 영역 > '비밀번호 변경' 클릭 이벤트
+            C$("#aChangePassword").on("click", function() {
+                C$("body").addClass("breakpoint-1024 pace-done modal-open ");
+                C$('#btnModalPwdChange').click();
+            });
+
+            // Header 영역 > '로그아웃' 클릭 이벤트
+            C$("#aLogout").on("click", function() {
+                var obj = {
+                    strCallUrl : "/login/logout"
+                }
+
+                COMMON.Ajax.fnRequest(obj);
+            });
+
+            C$("#btnChangePwd").on("click", function() {
+                if(!C$("#frmPwdChange").valid()) {
+                    return;
+                }
+
+                var adminId = /*[[${#request.getAttribute('adminId')}]]*/ 'sangheon';
+
+                console.log("adminId : "+adminId);
+
+                var obj = {
+                    requestData  : {
+                        adminId  : adminId,
+                        currPwd  : C$("#inpCurrPwd").val(),
+                        newPwd   : C$("#inpNewPwd").val(),
+                        reNewPwd : C$("#inpReNewPwd").val()
+                    },
+                    strCallUrl   : "/administrator/administrator/changePwd",
+                    strCallBack  : "fnChangePwdRet"
+                };
+
+                COMMON.Ajax.fnRequest(obj);
+            });
+        }
+
+        function fnChangePwdRet(objJson) {
+            if (objJson.intRetCode != 0) {
+                COMMON.Msg.fnAlertWithModal("작업이 실패하였습니다. (" + objJson.strRetMsg + ")", "pwdChangeModal", true);
+            } else {
+                C$("#pwdChangeModal").modal('hide');
+
+                COMMON.Msg.fnAlert("작업이 완료되었습니다.", function(){document.location.reload();}, objJson);
+                COMMON.Utils.fnFrmReset("frmPwdChange");
+                COMMON.Msg.fnResetBodyClass();
+            }
+        }
+
+        // 공통 모달 2개 이상인 경우, 호출시에 이전 모달 숨기기, 취소시 다시 나오도록 하기 (모달 취소시 이벤트)
+        var fnMultiModalBottomCancel = function(event) {
+
+            var strPreModalId = event.data.strPreModalId;
+            var strNowModalId = event.data.strNowModalId;
+
+            $('#'+strNowModalId).modal('hide');
+
+            try {
+                if (strPreModalId != "" && strPreModalId != undefined) {
+                    $('#' + strPreModalId).modal('show');
+                    strPreModalId = "";
+                } else {
+                    COMMON.Msg.fnResetBodyClass();
+                }
+            } catch (ex) {
+                COMMON.Msg.fnResetBodyClass();
+            }
+        }
+
+        /*]]>*/
+    </script>
+</html>

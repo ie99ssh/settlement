@@ -1,0 +1,439 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 메뉴그룹 View
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default">
+<th:block layout:fragment="content">
+    <!-- BEGIN PAGE CONTAINER-->
+    <div class="page-content">
+        <!-- BEGIN PAGE -->
+        <div class="content">
+            <div class="clearfix"></div>
+
+            <!-- BEGIN PAGE TITLE -->
+            <ul class="breadcrumb">
+                <li><p>YOU ARE HERE</p></li>
+                <li><a href="javascript:;" class="active" th:text="${#request.getAttribute('menuGroupName')}">메뉴그룹명</a></li>
+            </ul>
+            <div class="page-title"> <i class="icon-custom-left"></i>
+                <h4><span class="semi-bold" th:text="${#request.getAttribute('menuName')}">메뉴명</span></h4>
+            </div>
+            <!-- END PAGE TITLE -->
+
+            <!-- BEGIN PAGE FORM -->
+            <div id="div_search" class="row">
+                <div class="col-md-12">
+                    <div class="grid simple">
+                        <div class="grid-title no-border">
+                            <h4><i class="fa fa-th-large"></i><span>조회 결과</span></h4>
+                            <div class="tools"><a href="javascript:;" class="collapse"></a></div>
+                        </div>
+                        <div class="grid-body no-border">
+                            <div class="grid simple ">
+                                <div id="divGridArea" class="grid-body " style="display:none;">
+                                    <table class="table dt-responsive nowrap" id="tbMenuGroup" width="100%">
+                                        <thead>
+                                        <tr>
+                                            <th>순서</th>
+                                            <th>NO</th>
+                                            <th>메뉴 그룹 명</th>
+                                            <th>아이콘</th>
+                                            <th>아이콘 태그</th>
+                                            <th>사용 여부</th>
+                                            <th>등록자</th>
+                                            <th>등록 일시</th>
+                                            <th>수정 일시</th>
+                                            <th>삭제</th>
+                                        </tr>
+                                        </thead>
+                                    </table>
+                                    <br />
+                                    <div id="mainButtonArea" class="panel panel-info auth-all">
+                                        <div class="panel-heading">
+                                            <button id="btnAddMenuGroup" title='Insert' type='button' class='btn btn-circle btn-primary'><i class='fa fa-plus'></i></button> &nbsp;
+                                            <button id="btnEditMenuGroup" title='Save' type='button' class='btn btn-circle btn-primary'><i class='fa fa-save'></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END PAGE FORM -->
+        </div>
+        <!-- END PAGE -->
+    </div>
+    <!-- END PAGE CONTAINER-->
+</th:block>
+<th:block layout:fragment="customJS">
+    <!-- BEGIN CORE JS -->
+    <script th:inline="javascript">
+
+        /*<![CDATA[*/
+
+        let objMenuGroupTable;
+        const strMenuPath = '/menuAuthority/menuGroup';
+        const strSubMenuPath = '/menuAuthority/menu';
+
+        $(function() {
+            fnSetValidate();
+            fnInitEvent();
+            fnCreateDataTables();
+        });
+
+        /**------------------------------------------------------------
+         * Form Validate
+         ------------------------------------------------------------*/
+        const fnSetValidate = function() {
+            const arrValidate = {
+                FORMID   : "frmEditMenu",
+                VARIABLE : {
+                    menuName      : { required: true, maxlength:50 },
+                    menuLink      : { required: true, maxlength:100 },
+                    menuUrlSegment  : { required: true, maxlength:256 },
+                    useStateCode  : { required: true },
+                    menuDesc      : { required: true, maxlength:256 },
+                }
+            }
+
+            COMMON.Utils.fnSetValidate(arrValidate);
+        }
+
+        /**------------------------------------------------------------
+         * Event
+         ------------------------------------------------------------*/
+        const fnInitEvent = function() {
+            C$("#tbMenuGroup").on("click", ".sortUp", fnClickSortOrderUp);
+            C$("#tbMenuGroup").on("click", ".sortDown", fnClickSortOrderDown);
+            C$("#tbMenuGroup").on("click", "[name='deleteTempMenuGroup']", fnClickDeleteTemp);
+            C$("#tbMenuGroup").on("click", ".btnAddMenu", fnClickRegistMenu);
+            C$("#tbMenuGroup").on("click", ".btnDeleteMenuGroup", fnClickDeleteMenuGroup);
+            C$("#btnAddMenuGroup").on("click", fnClickAddMenuGroup);
+            C$("#btnEditMenuGroup").on("click", fnClickEditMenuGroup);
+            C$("#btnEditMenuModal").on("click", fnClickRegistMenuModal);
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 조회
+         ------------------------------------------------------------*/
+        const fnCreateDataTables = function () {
+            if (typeof objMenuGroupTable == "undefined") {
+                objMenuGroupTable = COMMON.Ajax.CreateDataTable("#tbMenuGroup", false, {
+                    url: strMenuPath + '/getAdminMenuGroupList',
+                    data: function () {
+
+                    },
+                    columns: [
+                        { "data": null,             "class" : "columnc", "render": fnRenderMenuSort },
+                        { "data": "menuGroupNo",     "class" : "columnc" },
+                        { "data": null,             "class" : "columnc", "render": fnRenderMenuName },
+                        { "data": null,             "class" : "columnc", "render": fnRenderIcon },
+                        { "data": null,             "class" : "columnc", "render": fnRenderIconTag },
+                        { "data": null,             "class" : "columnc", "render": fnRenderStatus },
+                        { "data": "regId",          "class" : "columnc" },
+                        { "data": "regDate",         "class" : "columnc" },
+                        { "data": "updDate",         "class" : "columnc" },
+                        { "data": null,             "class" : "columnc", "render": fnRenderWork }
+                    ],
+                    ordering: false,
+                    paging: false,
+                    dom: "rt",
+                    fnDrawCallback: function(settings) {
+                        fnBootstrapToggle();
+                    }
+                });
+            } else {
+                objMenuGroupTable.clearPipeline();
+                objMenuGroupTable.ajax.reload();
+            }
+
+            C$("#divGridArea").show();
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 리스트 명 Render
+         ------------------------------------------------------------*/
+        const fnRenderMenuName = function (data) {
+            return `<input type='text' value='${data.menuGroupName}' class='form-control'  data-menugroupno='${data.menuGroupNo}' data-menugroupname='${data.menuGroupName}' maxlength='30' />`;
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 리스트 정렬 Render
+         ------------------------------------------------------------*/
+        const fnRenderMenuSort = function (data) {
+            let strHtml = "";
+
+            strHtml += `<a href='javascript:;' class='sortUp'>
+                        <i class='fa fa-angle-up fa-2x' style=''></i>
+                        </a>
+                        &nbsp;&nbsp;&nbsp;<a href='javascript:;' class='sortDown'>
+                        <i class='fa fa-angle-down fa-2x' style=''></i>
+                    </a>`;
+
+            return strHtml;
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 아이콘 Render
+         ------------------------------------------------------------*/
+        const fnRenderIcon = function (data, type, full, meta) {
+            return `<button title='${data.menuGroupName}' type='button' class='btn btn-circle btn-primary'>
+                        <i class='${data.menuGroupIcon}'></i>
+                    </button>`;
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 아이콘 태그 Render
+         ------------------------------------------------------------*/
+        const fnRenderIconTag = function (data, type, full, meta) {
+            return `<input type='text' value='${data.menuGroupIcon}' class='form-control' />`;
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 리스트 상태 Render
+         ------------------------------------------------------------*/
+        const fnRenderStatus = function (data, type, full, meta) {
+
+            const useFlag = `${data.useFlag}` ? "checked" : "";
+
+            return `<input type='checkbox' class='chkUseFlag' data-on='Y' data-off='N' ${useFlag}>`;
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 리스트 작업 Render
+         ------------------------------------------------------------*/
+        const fnRenderWork = function (data, type, full, meta) {
+            const strHtml = `<button type='button' data-menugroupno='${data.menuGroupNo}'
+                                 data-menugroupsort='${data.sortOrder}'
+                                 class='btn btn-danger btn-xs btn-mini auth-all btnDeleteMenuGroup'>
+                                 <i class='fa fa-trash-o'></i>
+                             </button>`;
+            return strHtml;
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 수정 결과
+         ------------------------------------------------------------*/
+        function fnSaveBulkAdminMenuGroupRet(objJson) {
+            if (objJson.intRetCode === 0) {
+                objMenuGroupTable.ajax.reload();
+            }
+        }
+
+        /**------------------------------------------------------------
+         * 하위 메뉴 등록 결과
+         ------------------------------------------------------------*/
+        function fnInsertMenuRet(objJson) {
+            C$('#divEditMenuModal').modal("hide");
+
+            if (objJson.intRetCode === 0) {
+                objMenuGroupTable.ajax.reload();
+            }
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 삭제 결과
+         ------------------------------------------------------------*/
+        function fnDeleteGroupMenuRet(objJson) {
+            if (objJson.intRetCode !== 0) {
+                COMMON.Msg.fnAlert(objJson.strRetMsg);
+            } else {
+                objMenuGroupTable.ajax.reload();
+            }
+        }
+
+        /**------------------------------------------------------------
+         * 리스트 순서 변경 이벤트(UP)
+         ------------------------------------------------------------*/
+        const fnClickSortOrderUp = function(event) {
+            const $tr = $(event.currentTarget).closest("tr");
+            $tr.prev().before($tr);
+        }
+
+        /**------------------------------------------------------------
+         * 리스트 순서 변경 이벤트(DOWN)
+         ------------------------------------------------------------*/
+        const fnClickSortOrderDown = function(event) {
+            const $tr = $(event.currentTarget).closest("tr");
+            $tr.next().after($tr);
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 리스트 추가 이벤트
+         ------------------------------------------------------------*/
+        const fnClickAddMenuGroup = function(event) {
+            let strHtml          = "";
+
+            strHtml +=  `<tr>
+                        <td class='columnc'>
+                        <a href='javascript:;' class='sortUp'><i class='fa fa-angle-up fa-2x' style=''></i></a>
+                        &nbsp;&nbsp;&nbsp;<a href='javascript:;' class='sortDown'><i class='fa fa-angle-down fa-2x' style=''></i></a>
+                        </td>";
+                        <td class='columnc'></td>
+                        <td class='columnc'><input type='text' class='form-control' maxlength='30' /></td>
+                        <td class='columnc'></td>
+                        <td class='columnc'><input type='text' class='form-control' /></td>
+                        <td class='columnc'><input type='checkbox' class='chkUseFlag' data-on='Y' data-off='N' checked></td>
+                        <td class='columnc'></td>
+                        <td class='columnc'></td>
+                        <td class='columnc'></td>
+                        <td class='columnc'>
+                            <button type='button' title='Delete' name='deleteTempMenuGroup' class='btn btn-danger btn-xs btn-mini'>
+                                <i class='fa fa-undo'></i>
+                            </button>
+                        </td>
+                    </tr>`;
+
+            C$("#tbMenuGroup").find("tbody").append(strHtml);
+            fnBootstrapToggle();
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 리스트 추가 이벤트
+         ------------------------------------------------------------*/
+        const fnClickDeleteTemp = function(event) {
+            $(event.currentTarget).parents("tr").remove();
+
+            C$("#tbMenuGroup").find("[name='selMenuGroupSort']").each(function () {
+                $(this).find("option:last").remove();
+            });
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 리스트 저장 이벤트
+         ------------------------------------------------------------*/
+        const fnClickEditMenuGroup = function(event) {
+
+            const strConfirmMsg = '수정하시겠습니까?';
+            const strSuccessMsg = '작업이 완료되었습니다.';
+            const strErrorMsg   = '작업이 실패하었습니다.';
+
+            COMMON.Msg.fnConfirm(strConfirmMsg, function () {
+                let isEmptyFlag      = false;
+                const arrMenuGroupList = [];
+                let sortOrder        = 1;
+
+                C$("#tbMenuGroup").find("tbody tr").each(function () {
+                    if ($(this).find("td:eq(2) input:text").val().trim() === "") {
+                        isEmptyFlag = true;
+                        return false;
+                    }
+
+                    const objMenuGroup = {};
+                    objMenuGroup["menuGroupNo"]   = $(this).find("td:eq(2) input").data("menugroupno");
+                    objMenuGroup["menuGroupName"] = $(this).find("td:eq(2) input").val();
+                    objMenuGroup["menuGroupIcon"] = $(this).find("td:eq(4) input").val();
+                    objMenuGroup["sortOrder"]     = sortOrder++;
+                    objMenuGroup["useFlag"]       = !!$(this).find("td:eq(5) input").prop("checked");
+
+                    arrMenuGroupList.push(objMenuGroup);
+                });
+
+                if (isEmptyFlag) {
+                    const strAlertMsg = '메뉴 그룹명을 입력해 주시기 바랍니다.';
+                    COMMON.Msg.fnAlert(strAlertMsg);
+                    return;
+                }
+
+                const obj = {
+                    requestData: {
+                        menuGroupList : arrMenuGroupList
+                    },
+                    strCallUrl    : strMenuPath + "/saveBulkAdminMenuGroup",
+                    strCallBack   : "fnSaveBulkAdminMenuGroupRet",
+                    isModalMsg    : true,
+                    strSuccessMsg : strSuccessMsg,
+                    strErrorMsg   : strErrorMsg
+                }
+
+                COMMON.Ajax.fnRequest(obj);
+            });
+        }
+
+        /**------------------------------------------------------------
+         * 하위 메뉴 등록 모달 노출 이벤트
+         ------------------------------------------------------------*/
+        const fnClickRegistMenu = function(event) {
+            const $this = $(event.currentTarget);
+
+            COMMON.Utils.fnFrmReset("frmEditMenu");
+
+            C$("#hidInsMenuGroupNo").val($this.data("menugroupno"));
+            C$("#txtInsMenuGroupName").val($this.data("menugroupname"));
+            C$("#hidInsMenuNo").val("0");
+            C$("#chkUseFlag").bootstrapToggle('on');
+        }
+
+        /**------------------------------------------------------------
+         * 하위 메뉴 등록 이벤트
+         ------------------------------------------------------------*/
+        const fnClickRegistMenuModal = function(event) {
+            if (!C$("#frmEditMenu").valid()) {
+                return;
+            }
+
+            const sObj = C$("#frmEditMenu").serializeObject();
+            sObj.useFlag = C$("#chkUseFlag").prop("checked");
+
+            const strSuccessMsg = '작업이 완료되었습니다.';
+            const strErrorMsg   = '작업이 실패하었습니다.';
+
+            const obj = {
+                requestData   : sObj,
+                strCallUrl    : strSubMenuPath + "/mergeMenu",
+                strCallBack   : "fnInsertMenuRet",
+                isModalMsg    : true,
+                strSuccessMsg : strSuccessMsg,
+                strErrorMsg   : strErrorMsg
+            }
+
+            COMMON.Ajax.fnRequest(obj);
+        }
+
+        /**------------------------------------------------------------
+         * 메뉴 그룹 삭제 이벤트 (모달)
+         ------------------------------------------------------------*/
+        const fnClickDeleteMenuGroup = function(event) {
+            const $this         = $(event.currentTarget);
+            const menuGroupNo   = $this.data("menugroupno");
+            const sortOrder     = $this.data("menugroupsort");
+
+            const strConfirmMsg = '메뉴 그룹을 삭제하시겠습니까?';
+            const strSuccessMsg = '작업이 완료되었습니다.';
+            const strErrorMsg   = '작업이 실패하었습니다.';
+
+            COMMON.Msg.fnConfirm(strConfirmMsg, function () {
+
+                const obj = {
+                    requestData: {
+                        menuGroupNo : menuGroupNo,
+                        sortOrder   : sortOrder
+                    },
+                    strCallUrl    : strMenuPath + "/deleteAdminMenuGroup",
+                    strCallBack   : "fnDeleteGroupMenuRet",
+                    isModalMsg    : true,
+                    strSuccessMsg : strSuccessMsg,
+                    strErrorMsg   : strErrorMsg
+                }
+
+                COMMON.Ajax.fnRequest(obj);
+            });
+        }
+
+        /**------------------------------------------------------------
+         * bootstrap toggle 세팅
+         ------------------------------------------------------------*/
+        const fnBootstrapToggle = function() {
+            $(".chkUseFlag").bootstrapToggle();
+        }
+        /*]]>*/
+    </script>
+    <!-- END CORE JS -->
+</th:block>
+</html>

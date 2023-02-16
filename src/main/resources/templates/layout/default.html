@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <title th:text="${@environment.getProperty('browser.title')}"></title>
+        <link rel="shortcut icon" th:href="${@environment.getProperty('static.url') + '/Images/sd_favicon.png'}">
+        <!-- 공통 CSS 영역 -->
+        <th:block th:include="layout/config :: common_css"></th:block>
+        <!-- Custom CSS 영역 -->
+        <th:block layout:fragment="customCSS"></th:block>
+        <!-- 공통 Javascript 영역 -->
+        <th:block th:include="layout/config :: common_js"></th:block>
+    </head>
+    <body>
+        <!-- 헤더 영역 -->
+        <th:block th:replace="layout/header :: headerFragment"></th:block>
+        <!-- Body 영역 -->
+        <div class="page-container row">
+            <leftMenu th:replace="layout/leftMenu :: leftMenuFragment"></leftMenu>
+            <div layout:fragment="content"></div>
+        </div>
+        <!-- Modal 영역 -->
+        <th:block th:replace="layout/modal :: modalFragment"></th:block>
+
+        <!-- 공통 스크립트 처리 영역 -->
+        <th:block th:replace="layout/script :: scriptFragment"></th:block>
+        <!-- Custom javascript 영역 -->
+        <th:block layout:fragment="customJS"></th:block>
+    </body>
+</html>

@@ -1,0 +1,71 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 기본 헤더 영역
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <!-- BEGIN HEADER -->
+    <div th:fragment="headerFragment" class="header navbar navbar-inverse ">
+        <!-- BEGIN TOP NAVIGATION BAR -->
+        <div class="navbar-inner">
+            <!--<div class="header-seperation" style="background-color:#ffffff;">-->
+            <div class="header-seperation" style="background-color: #ffffff;">
+                <ul class="nav pull-left notifcation-center" id="main-menu-toggle-wrapper" style="display:none">
+                    <li class="dropdown">
+                        <a id="main-menu-toggle" href="#main-menu" class="iconset top-menu-toggle-white"></a>
+                    </li>
+                </ul>
+                <!-- BEGIN LOGO -->
+                <a href="/dashboard/dashboard/dashboard" class="lnb-title" th:style="'background-image: url(' + ${@environment.getProperty('static.url')} + '/Images/logo-horizontal@3x.png);background-position:-10px -40px; background-repeat: no-repeat; background-size: 200px; height: 60px;'"></a>
+                <!-- END LOGO -->
+            </div>
+            <!-- END RESPONSIVE MENU TOGGLER -->
+            <div class="header-quick-nav">
+                <!-- BEGIN TOP NAVIGATION MENU -->
+                <div class="pull-left">
+                    <ul class="nav quick-section">
+                        <li class="quicklinks">
+                            <a href="#" class="" id="layout-condensed-toggle"><span class="iconset top-menu-toggle-dark"></span></a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- END TOP NAVIGATION MENU -->
+                <!-- BEGIN CHAT TOGGLER -->
+                <div class="pull-right">
+
+                    <div class="chat-toggler">
+                        <div class="profile-pic"></div>
+                    </div>
+
+                    <div class="chat-toggler">
+                        <div class="profile-pic"></div>
+                        <div class="user-details">
+                            <div class="username">
+                                <span class="semi-bold" style="color:#1B1E24;" th:text="${#request.getAttribute('adminId')}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="nav quick-section ">
+                        <li class="quicklinks">
+                            <a data-toggle="dropdown" class="dropdown-toggle  pull-right " href="#" id="user-options"><span class="iconset top-settings-dark "></span></a>
+                            <ul class="dropdown-menu  pull-right" role="menu" aria-labelledby="user-options">
+
+                                <li class="divider"></li>
+                                <li><a id="aChangePassword" href="javascript:;"><i class="fa fa-unlock-alt"></i>&nbsp;&nbsp;패스워드 변경</a></li>
+                                <!--                                 <li class="divider"></li> -->
+                                <!--                                 <li class="divider"></li> -->
+                                <li><a id="aLogout" href="/login/logout"><i class="fa fa-unlock-alt"></i>&nbsp;&nbsp;로그아웃</a></li>
+                                <li class="divider"></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <!-- END CHAT TOGGLER -->
+            </div>
+            <!-- END TOP NAVIGATION MENU -->
+        </div>
+        <!-- END TOP NAVIGATION BAR -->
+    </div>
+    <!-- END HEADER -->
+</html>

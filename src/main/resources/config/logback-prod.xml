@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="LOG_DIR" value="./logs" />
+
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>rec.in.mhq.io:1111</destination>
+        <destination>rec.in.mhq.io:1112</destination>
+        <connectionStrategy>
+            <roundRobin>
+                <connectionTTL>30 seconds</connectionTTL>
+            </roundRobin>
+        </connectionStrategy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{
+                "appname":"pg-web",
+                "env": "production"
+                }</customFields>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- By default, encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
+        <encoder>
+            <pattern>%d{yyyyMMdd HH:mm:ss.SSS} [%thread] %-3level %logger{5} - %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_DIR}/sikdae_Admin_%d{yyyyMMdd}.log</FileNamePattern>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{HH:mm:ss.SSS}] %-4relative [%thread] %-5level %logger{35} - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--
+    jdbc.sqlonly    : Logs only SQL
+    jdbc.sqltiming  : Logs the SQL, post-execution, including timing execution statistics
+    jdbc.audit      : Logs ALL JDBC calls except for ResultSets
+    jdbc.resultset  : all calls to ResultSet objects are logged
+    jdbc.connection : Logs connection open and close events
+    -->
+    <logger name="jdbc" level="OFF"/>
+
+    <logger name="jdbc.sqlonly" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="jdbc.sqltiming" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="jdbc.audit" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="jdbc.resultset" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="jdbc.resultsettable" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="jdbc.connection" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <!-- Custom -->
+    <logger name="INTERCEPTOR" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="HANDLER" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="CONFIG" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="UTIL" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="RESOLVER" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="EXCEPTION" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="FILTER" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="AOP" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="CONTROLLER" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <logger name="SERVICEIMPL" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+    </logger>
+
+    <!-- Root -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGSTASH" />
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

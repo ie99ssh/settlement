@@ -1,0 +1,506 @@
+<!------------------------------------------------------------------------
+# Author : yrjeon
+# Desc   : 공지사항 view
+# Date   : 2019.01.17
+#------------------------------------------------------------------------>
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default">
+<!-- BEGIN PAGE CONTAINER-->
+<th:block layout:fragment="content">
+<div class="page-content">
+    <div class="content">
+        <div class="clearfix"></div>
+
+        <!-- BEGIN PAGE TITLE -->
+        <ul class="breadcrumb">
+            <li><p>YOU ARE HERE</p></li>
+            <li><a href="javascript:;" class="active" th:text="${#request.getAttribute('menuGroupName')}">메뉴그룹명</a>
+            </li>
+        </ul>
+        <div class="page-title"><i class="icon-custom-left"></i>
+            <h4><span class="semi-bold" th:text="${#request.getAttribute('menuName')}">메뉴명</span></h4>
+        </div>
+        <!-- END PAGE TITLE -->
+
+        <!-- BEGIN SEARCH CONDITION AREA -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="grid simple">
+                    <div class="grid-title no-border">
+                        <h4><i class="fa fa-th-large"></i><span>조회 조건</span></h4>
+                        <div class="tools"><a href="javascript:;" id="searchCollapse" class="collapse"></a></div>
+                    </div>
+                    <div class="grid-body no-border">
+                        <form id="frmSearch">
+                            <input type="hidden" name="strSortType" value="DESC">
+                            <input type="hidden" name="strSortColumn" value="noticeSeq">
+                            <div class="row form-row">
+                                <div class="col-md-3">
+                                    <label class="form-label">제목</label>
+                                    <div class="input-with-icon  right">
+                                        <input type="text" id="txtTitle" name="title" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">작성자</label>
+                                    <div class="input-with-icon  right">
+                                        <input type="text" id="txtRegID" name="regId" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">캘린더 노출 여부</label>
+                                    <select name="calendarFlag" id="selCalendarFlag" class="select2 form-control">
+                                        <option value="">전체</option>
+                                        <option value="true">노출</option>
+                                        <option value="false">미노출</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row form-row">
+                                <div class="col-md-3" th:replace="common/commonSearchPeriod :: searchPeriodFragment"></div>
+                                <div class="col-md-3">
+                                    <label class="form-label">기간(시작)</label>
+                                    <div id="div_StartYMD" class="input-append primary date col-md-10 col-lg-10 no-padding commonDivStart">
+                                        <input id="txtStartYMD" name="strFromYMD" type="text" class="form-control" th:value="${#request.getAttribute('strDefaultYMD')}" />
+                                        <span class="add-on"><span class="arrow"></span><i class="fa fa-th"></i></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">기간(종료)</label>
+                                    <div id="div_EndYMD" class="input-append primary date col-md-10 col-lg-10 no-padding commonDivEnd">
+                                        <input id="txtEndYMD" name="strToYMD" type="text" class="form-control" th:value="${#request.getAttribute('strToYMD')}" />
+                                        <span class="add-on"><span class="arrow"></span><i class="fa fa-th"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="divideline"></div>
+                            <div class="row form-row">
+                                <div class="col-md-9"></div>
+                                <div class="col-md-3" style="text-align:right;">
+                                    <div>
+                                        <button type="button" id="btnSearch" class="btn btn-primary btn-small">조회</button>
+                                        <button type="button" id="btnRegist" class="btn btn-danger btn-small" data-toggle='modal' data-target='#divEditNotice'>등록</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END SEARCH CONDITION AREA -->
+
+        <!-- BEGIN SEARCH LIST AREA -->
+        <div id="div_search" class="row">
+            <div class="col-md-12">
+                <div class="grid simple">
+                    <div class="grid-title no-border">
+                        <h4><i class="fa fa-th-large"></i><span>조회 결과</span></h4>
+                        <div class="tools"><a href="javascript:;" class="collapse"></a></div>
+                    </div>
+                    <div class="grid-body no-border" >
+                        <div id="div_searchResult" style="display:none;">
+                            <div class="grid simple ">
+                                <div class="grid-body ">
+                                    <table class="table" id="tblAdministratorNotice" style="width:100%; table-layout:fixed;" >
+                                        <thead>
+                                        <tr>
+                                            <th id="noticeSeq" class="sort_header">NO</th>
+                                            <th id="regYMD" class="sort_header">등록일</th>
+                                            <th id="title" class="sort_header">제목</th>
+                                            <th id="regDate" class="sort_header">등록일시</th>
+                                            <th id="regId" class="sort_header">작성자</th>
+                                            <th id="calendarFlag" class="sort_header">캘린더 노출 여부</th>
+                                            <th>작업</th>
+                                        </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END SEARCH LIST AREA -->
+    </div>
+</div>
+
+<!-- BEGIN DETAIL MODAL AREA -->
+<div class="modal" id="divDtlNotice" tabindex="-1" role="dialog" aria-labelledby="labelDtlNoticeModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" aria-hidden="true" data-dismiss="modal">x</button>
+                <br>
+                <i class="fa fa-pencil fa-2x"></i>
+                <h4 id="myModalDtl" class="semi-bold">상세 보기</h4>
+                <br>
+            </div>
+            <div class="modal-body">
+                <form id="frmDtlNotice" name="frmDtlNotice">
+                    <div class="form-group">
+                        <label class="form-label"><span>제목</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="modalDtlTitle" name="modalDtlTitle" class="form-control" disabled/>
+                        </div>
+                    </div>
+                    <div class="row form-row">
+                        <div class="col-md-4">
+                            <label class="form-label"><span>등록일</span><i class="fa fa-asterisk text-danger"></i></label>
+                            <div class="input-with-icon right">
+                                <i class=""></i>
+                                <input type="text" id="dtlRegYMD" class="form-control" disabled/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"><span>작성자</span></label>
+                            <div class="input-with-icon right">
+                                <i class=""></i>
+                                <input type="text" id="dtlRegId" class="form-control" disabled/>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row form-row">
+                        <div class="col-md-4">
+                            <label class="form-label"><span>캘린더 노출 여부</span><i class="fa fa-asterisk text-danger"></i></label>
+                            <div class="input-with-icon right">
+                                <i class=""></i>
+                                <input type="checkbox" id="dtlUseFlag" name="dtlUseFlag" data-toggle="toggle" data-on="Y" data-off="N">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"><span>이벤트 일자</span></label>
+                            <div class="input-with-icon right">
+                                <i class=""></i>
+                                <input type="text" id="modalDtlEventYMD" class="form-control" disabled/>
+                            </div>
+                        </div>
+                    </div>
+                    <br><br>
+                    <div class="form-group">
+                        <label class="form-label"><span>내용</span></label>
+                        <div class="input-with-icon right divideline">
+                            <i class=""></i>
+                            <div type="text" id="modalDtlContent" style="background-color:#fff;padding:2%;"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END EDIT MODAL AREA -->
+
+<!-- BEGIN EDIT MODAL AREA -->
+<div class="modal" id="divEditNotice" tabindex="-1" role="dialog" aria-labelledby="labelInsNotice" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" aria-hidden="true" data-dismiss="modal">x</button>
+                <br>
+                <i id="iconInsert" class="fa fa-pencil fa-2x"></i>
+                <i id="iconUpdate" class="fa fa-edit fa-2x" style="display:none;"></i>
+                <h4 id="myModalLabelIns" class="semi-bold">공지사항 등록</h4>
+                <h4 id="myModalLabelUpd" class="semi-bold" style="display:none;">공지사항 수정</h4>
+                <br>
+            </div>
+            <div class="modal-body">
+                <form id="frmInsNotice" name="frmInsNotice">
+                    <div class="form-group">
+                        <label class="form-label"><span>제목</span> <i class="fa fa-asterisk text-danger"></i></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="text" id="modalTitle" name="modalTitle" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-row">
+                        <div class="col-md-4">
+                            <label class="form-label"><span>캘린더 노출 여부</span><i class="fa fa-asterisk text-danger"></i></label>
+                            <div class="input-with-icon right">
+                            <i class=""></i>
+                            <input type="checkbox" id="chkUseFlag" name="useFlag" data-toggle="toggle" data-on="Y" data-off="N" checked>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"><span>이벤트 일자</span></label>
+                            <div class="input-with-icon">
+                                <div id="modal_div_StartYMD" class="input-append primary date no-padding">
+                                    <input id="modal_txtStartYMD" class="form-control" name="strFromYMD" type="text" required th:value="${#request.getAttribute('strToYMD')}"/>
+                                    <span class="add-on"><span class="arrow"></span><i class="fa fa-th"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br><br>
+                    <div class="form-group">
+                        <label class="form-label"><span>내용</span></label>
+                        <div class="input-with-icon right">
+                            <i class=""></i>
+                            <textarea type="text" id="modalContent" name="editor1" row="10" cols="80"></textarea>
+                            <script>
+                                CKEDITOR.replace('editor1');
+                            </script>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                    <button type="button" id="btnEditNotice" class="btn btn-danger">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END EDIT MODAL AREA -->
+</th:block>
+
+<th:block layout:fragment="customJS">
+<th:block th:include="common/commonSearchPeriod :: searchPeriodJSFragment"></th:block>
+
+<!-- BEGIN CORE JS-->
+<script th:inline="javascript">
+    var objAdministratorNoticeTable;
+    var strPath      = '/administratorNotice/administratorNotice';
+    var intSeqNotice = 0;
+    var strEventInit = C$("#modal_txtStartYMD").val();
+
+    $(function() {
+        fnInitEvent();
+        fnSetValidate();
+    });
+
+    /**------------------------------------------------------------
+     * Form Validate
+     ------------------------------------------------------------*/
+    var fnSetValidate = function () {
+        var arrValidate = {
+            FORMID   : "frmInsNotice",
+            VARIABLE : {
+                modalTitle : { required: true, maxlength: 100 }
+            }
+        }
+
+        COMMON.Utils.fnSetValidate(arrValidate);
+
+        C$("#chkUseFlag").change(function() {
+            if(C$("#chkUseFlag").prop("checked")) {
+                C$("#modal_txtStartYMD").attr("required", true);
+                C$("#modal_txtStartYMD").removeAttr("disabled");
+                C$("#modal_txtStartYMD").val(strEventInit);
+            } else{
+                C$("#modal_txtStartYMD").attr("required", false);
+                C$("#modal_txtStartYMD").attr("disabled", "disabled");
+                C$("#modal_txtStartYMD").val("");
+            }
+        })
+
+        C$("#modal_txtStartYMD").change();
+    }
+
+    /**------------------------------------------------------------
+     * 이벤트
+     ------------------------------------------------------------*/
+    var fnInitEvent = function(){
+        COMMON.Utils.fnInitSearchDateTimePicker("#div_StartYMD", "#div_EndYMD");
+
+        COMMON.Utils.fnInitSingleDateTimePicker("#modal_div_StartYMD", "YYYYMMDD", {
+            autoclose   : true,
+            viewMode    : "days",
+            minViewMode : "days",
+            pickTime    : false,
+            format      : "YYYY-MM-DD"
+        });
+
+        C$("#btnSearch").on("click", fnCreateDataTables);
+
+        C$(".sort_header").on("click", function() {
+            COMMON.Utils.fnSortSettings(this, $("#frmSearch"));
+        });
+
+        //등록버튼 클릭
+        C$("#btnRegist").on("click", fnClickInsNotice);
+
+        //등록저장버튼클릭
+        C$("#btnEditNotice").on("click", fnClickEditNotice);
+    }
+
+    /**------------------------------------------------------------
+     * 공지사항 리스트 조회
+     ------------------------------------------------------------*/
+    var fnCreateDataTables = function () {
+        if (typeof objAdministratorNoticeTable == "undefined") {
+            objAdministratorNoticeTable = COMMON.Ajax.CreateDataTable("#tblAdministratorNotice", true, {
+                url: strPath + '/selectAdministratorNoticeList',
+                data: function () {
+                    return $("#frmSearch").serializeObject();
+                },
+                columns: [
+                    { "data": "noticeSeq", "class": "column5c"  },
+                    { "data": null,        "class": "column10c", "render": fnRegYMD },
+                    { "data": null,        "class": "column25c", "render": fnTitle },
+                    { "data": "regDate",   "class": "column10c" },
+                    { "data": "regId",     "class": "column5c"  },
+                    { "data": null,        "class": "column5c", "render": fnCalendarFlag },
+                    { "data": null,        "class": "column5c", "render": fnRenderWork }
+                ]
+            });
+        } else {
+            objAdministratorNoticeTable.clearPipeline();
+            objAdministratorNoticeTable.ajax.reload();
+        }
+
+        C$("#div_searchResult").show();
+    }
+
+    /**------------------------------------------------------------
+     * 등록일 랜더링 함수
+     ------------------------------------------------------------*/
+    function fnRegYMD(data) {
+        return data["regYMD"].substring(0,4) + "." + data["regYMD"].substring(4, 6) + "." + data["regYMD"].substring(6, 8);
+    }
+
+    /**------------------------------------------------------------
+     * 제목 랜더링 함수
+     ------------------------------------------------------------*/
+    function fnTitle(data) {
+        return "<a type='button' data-toggle='modal' class='title' href='#divDtlNotice' data-content='" + data["content"] + "' data-event='" + data["eventYMD"]
+                + "' data-title='" + data["title"] + "' data-flag='" + data["calendarFlag"] + "' data-regymd='" + data["regYMD"] + "' data-regid='" + data["regId"] + "'>" + data["title"] + "</a>";
+    }
+
+    /**------------------------------------------------------------
+     * 노출 미노출 설정 랜더링 함수
+     ------------------------------------------------------------*/
+    function fnCalendarFlag(data) {
+         return data["calendarFlag"] == "1" ? "노출" : "미노출";
+    }
+
+    /**------------------------------------------------------------
+     * 리스트 수정 랜더링 함수
+     ------------------------------------------------------------*/
+    function fnRenderWork(data) {
+        return "<button data-toggle='modal' data-target='#divEditNotice' id='btnEdit' title='update' type='button' class='btn btn-primary btn-xs btn-mini auth-all'" +
+               " data-title = '" + data["title"] +"' data-content = '" + data["content"] + "' data-flag = '" + data["calendarFlag"] + "' data-event ='" + data["eventYMD"] + "' data-seq = '"+data["noticeSeq"]+"'><i class='fa fa-edit'></i></button>";
+    }
+
+    /**------------------------------------------------------------
+     * 상세 내용
+     ------------------------------------------------------------*/
+    C$("#tblAdministratorNotice").on("click", ".title", function(event) {
+        var $this       = $(event.currentTarget);
+        var strDtlEvent = "";
+
+        C$("#modalDtlContent").html($this.data("content"));
+        C$("#modalDtlTitle").val($this.data("title"));
+        C$("#dtlRegYMD").val($this.data("regymd").toString().substring(0, 4) + "." + $this.data("regymd").toString().substring(4, 6) + "." + $this.data("regymd").toString().substring(6, 8));
+        C$("#dtlRegId").val($this.data("regid"));
+        C$("#dtlUseFlag").prop("checked", $this.data("flag")).change();
+
+        strDtlEvent = $this.data("flag") ? $this.data("event").toString().substring(0, 4) + "." + $this.data("event").toString().substring(4, 6) + "." +$this.data("event").toString().substring(6, 8) : "";
+
+        C$("#modalDtlEventYMD").val(strDtlEvent);
+    });
+
+    /**------------------------------------------------------------
+     * 공지사항 등록 이벤트
+     ------------------------------------------------------------*/
+    var fnClickInsNotice = function() {
+        COMMON.Utils.fnFrmReset("frmInsNotice");
+
+        CKEDITOR.instances.modalContent.setData("");
+
+        intSeqNotice = 0;
+
+        C$("#myModalLabelIns").show();
+        C$("#myModalLabelUpd").hide();
+        C$("#chkUseFlag").prop("checked", true).change();
+        C$("#iconInsert").show();
+        C$("#iconUpdate").hide();
+    }
+
+    /**------------------------------------------------------------
+     * 공지사항 수정 이벤트
+     -----------------------------------------------------------*/
+    C$("#tblAdministratorNotice").on("click", "button[id='btnEdit']", function(event) {
+        var $this    = $(event.currentTarget);
+        var strEvent = "";
+
+        COMMON.Utils.fnFrmReset("frmInsNotice");
+
+        C$("#myModalLabelIns").hide();
+        C$("#myModalLabelUpd").show();
+        C$("#iconInsert").hide();
+        C$("#iconUpdate").show();
+
+        intSeqNotice = $this.data("seq");
+
+        C$("#modalTitle").val($this.data("title"));
+        C$("#chkUseFlag").prop("checked", $this.data("flag")).change();
+
+        strEvent = $this.data("flag") ? $this.data("event").toString().substring(0, 4) + "." + $this.data("event").toString().substring(4, 6) + "." +$this.data("event").toString().substring(6, 8) : "";
+
+        C$("#modal_txtStartYMD").val(strEvent);
+
+        CKEDITOR.instances.modalContent.setData($this.data("content"));
+    });
+
+    /**------------------------------------------------------------
+     * 공지사항 등록 저장 함수
+     ------------------------------------------------------------*/
+    var fnClickEditNotice = function() {
+        var strToday   = new Date();
+        var strContent = "";
+
+        if (!C$("#frmInsNotice").valid()) {
+            return;
+        }
+
+        strContent = CKEDITOR.instances.modalContent.getData();
+
+        var strSuccessMsg = '작업이 완료되었습니다.';
+        var strErrorMsg   = '작업이 실패하였습니다.';
+
+        var obj = {
+            requestData: {
+                noticeSeq    : intSeqNotice,
+                regYMD       : strToday.toISOString().substring(0, 10),
+                title        : C$("#modalTitle").val(),
+                content      : strContent,
+                calendarFlag : C$("#chkUseFlag").prop("checked") ? 1 : 0,
+                eventYMD     : C$("#modal_txtStartYMD").val()
+            },
+            strCallUrl    : strPath + '/updateAdministratorNoticeList',
+            strCallBack   : "fnUpdateNoticeRet",
+            isModalMsg    : true,
+            strSuccessMsg : strSuccessMsg,
+            strErrorMsg   : strErrorMsg
+        }
+
+        COMMON.Ajax.fnRequest(obj);
+    }
+
+    /**------------------------------------------------------------
+     * 공지사항 등록/수정 결과
+     ------------------------------------------------------------*/
+    var fnUpdateNoticeRet = function (objJson) {
+        C$('#divEditNotice').modal("hide");
+
+        if (objJson.intRetCode == 0) {
+            fnCreateDataTables();
+        }
+    }
+</script>
+</th:block>
+</html>

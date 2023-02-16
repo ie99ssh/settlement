@@ -1,0 +1,188 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 관리자 로그인 실패 View
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default">
+
+<th:block layout:fragment="content">
+<!-- BEGIN PAGE CONTAINER-->
+<div class="page-content">
+    <div class="content">
+        <div class="clearfix"></div>
+
+        <!-- BEGIN PAGE TITLE -->
+        <ul class="breadcrumb">
+            <li><p>YOU ARE HERE</p></li>
+            <li><a href="javascript:;" class="active" th:text="${#request.getAttribute('menuGroupName')}">메뉴 그룹명</a></li>
+        </ul>
+        <div class="page-title"> <i class="icon-custom-left"></i>
+            <h4><span class="semi-bold" th:text="${#request.getAttribute('menuName')}">메뉴명</span></h4>
+        </div>
+        <!-- END PAGE TITLE -->
+
+        <!-- BEGIN SEARCH CONDITION AREA -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="grid simple">
+                    <div class="grid-title no-border">
+                        <h4><i class="fa fa-th-large"></i><span>조회 조건</span></h4>
+                        <div class="tools"><a href="javascript:;" id="searchCollapse" class="collapse"></a></div>
+                    </div>
+                    <div class="grid-body no-border">
+                        <form id="frmSearch">
+                            <input type="hidden" name="strSortType">
+                            <input type="hidden" name="strSortColumn">
+                            <div class="row form-row">
+                                <div class="col-md-3">
+                                    <label class="form-label">관리자ID</label>
+                                    <div class="input-with-icon  right">
+                                        <input type="text" id="txtTryAdminID" name="adminId" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">아이피 주소</label>
+                                    <div class="input-with-icon  right">
+                                        <input type="text" id="txtIPAddr" name="ipAddr" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">기간</label>
+                                    <div id="div_fromDate" class="input-append primary date col-md-10 col-lg-10 no-padding">
+                                        <input id="txtFromYMD" name="strFromYMD" type="text" class="form-control" th:value="${#request.getAttribute('strFromYMD')}" />
+                                        <span class="add-on"><span class="arrow"></span><i class="fa fa-th"></i></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <div id="div_toDate" class="input-append primary date col-md-10 col-lg-10 no-padding">
+                                        <input id="txtToYMD" name="strToYMD" type="text" class="form-control" th:value="${#request.getAttribute('strToYMD')}" />
+                                        <span class="add-on"><span class="arrow"></span><i class="fa fa-th"></i></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                </div>
+                            </div>
+                            <div class="divideline"></div>
+                            <div class="row form-row">
+                                <div class="col-md-9"></div>
+                                <div class="col-md-3" style="text-align:right;">
+                                    <div>
+                                        <button type="button" id="btnSearch" class="btn btn-primary btn-small">조회</button>
+                                        <button type="button" id="btnExcel" th:style="${#request.getAttribute('dnAvailFlag')} ? '' : 'display: none'" class="btn btn-info btn-small">엑셀</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END SEARCH CONDITION AREA -->
+
+        <!-- BEGIN SEARCH LIST AREA -->
+        <div id="div_search" class="row">
+            <div class="col-md-12">
+                <div class="grid simple">
+                    <div class="grid-title no-border">
+                        <h4><i class="fa fa-th-large"></i><span>조회 결과</span></h4>
+                        <div class="tools"><a href="javascript:;" class="collapse"></a></div>
+                    </div>
+                    <div class="grid-body no-border" >
+                        <div id="div_searchResult" style="display:none;">
+                            <div class="grid simple ">
+                                <div class="grid-body ">
+                                    <table class="table" id="tblAdminLoginFailHist" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th id="adminId" class="sort_header">시도관리자ID</th>
+                                                <th id="errCode" class="sort_header">오류코드</th>
+                                                <th id="errMsg" class="sort_header">오류메시지</th>
+                                                <th id="ipAddr" class="sort_header">아이피주소</th>
+                                                <th id="regDate" class="sort_header">등록일시</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END SEARCH LIST AREA -->
+   </div>
+   <!-- END PAGE -->
+</div>
+<!-- BEGIN PAGE CONTAINER-->
+</th:block>
+
+<th:block layout:fragment="customJS">
+<!-- BEGIN CORE JS -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let objAdminLoginFailHistTable;
+    const strMenuPath = '/administrator/adminLoginFailHist';
+
+    $(function() {
+        fnInitEvent();
+        fnCreateDataTables();
+    });
+
+    /**------------------------------------------------------------
+    * 이벤트
+    ------------------------------------------------------------*/
+    function fnInitEvent() {
+        COMMON.Utils.fnInitSearchDateTimePicker("#div_fromDate", "#div_toDate");
+
+        C$("#btnSearch").on("click", fnCreateDataTables);
+
+        C$(".sort_header").on("click", function() {
+            COMMON.Utils.fnSortSettings(this, $("#frmSearch"));
+        });
+    }
+
+    /**------------------------------------------------------------
+    * 관리자 로그인 실패 리스트 조회
+    ------------------------------------------------------------*/
+    function fnCreateDataTables() {
+        if (typeof objAdminLoginFailHistTable == "undefined") {
+            objAdminLoginFailHistTable = COMMON.Ajax.CreateDataTable("#tblAdminLoginFailHist", true, {
+                url: strMenuPath + '/selectAdminLoginFailHistList',
+                data: function () {
+                    return C$("#frmSearch").serializeObject();
+                },
+                columns: [
+                    { "data": "adminId", "class": "columnc" },
+                    { "data": "errCode", "class": "columnc" },
+                    { "data": "errMsg",  "class": "columnc" },
+                    { "data": "ipAddr",  "class": "columnc" },
+                    { "data": "regDate", "class": "columnc" }
+                ]
+            });
+        } else {
+            objAdminLoginFailHistTable.clearPipeline();
+            objAdminLoginFailHistTable.ajax.reload();
+        }
+
+        C$("#div_searchResult").show();
+    }
+
+    // '엑셀' 버튼 이벤트
+    C$("#btnExcel").on("click", function() {
+        const strConfirmMsg   = '엑셀을 다운로드 하시겠습니까?';
+        if(confirm(strConfirmMsg)) {
+            const strExcelPath = strMenuPath + "/excelDownload";
+
+            COMMON.Utils.fnFileDownload("GET", $("#frmSearch").serializeObject(), strExcelPath);
+        }
+    });
+    /*]]>*/
+</script>
+<!-- END CORE JS -->
+</th:block>
+</html>

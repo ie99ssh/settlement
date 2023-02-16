@@ -1,0 +1,29 @@
+<!------------------------------------------------------------------------
+# Author : sangheon
+# Desc   : 기본 좌측(메뉴) 영역
+# Date   : 2018.09.28
+#------------------------------------------------------------------------>
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <!-- BEGIN SIDEBAR -->
+    <div th:fragment="leftMenuFragment" class="page-sidebar" id="main-menu">
+        <div class="page-sidebar-wrapper scrollbar-dynamic" id="main-menu-wrapper">
+            <!-- BEGIN SIDEBAR MENU -->
+            <ul>
+                <li th:class="${#request.getAttribute('menuGroupNo') == adminMenuDto.menuGroupNo} ? 'start open' : 'start'" th:each="adminMenuDto : ${#request.getAttribute('menuList')}">
+                    <a href="javascript:;">
+                        <i th:class="${adminMenuDto.menuGroupIcon}"></i>
+                        <span class="title" th:text="${adminMenuDto.menuGroupName}"></span>
+                        <span th:class="${#request.getAttribute('menuGroupNo') == adminMenuDto.menuGroupNo} ? 'arrow open' : 'arrow'"></span>
+                    </a>
+                    <ul class="sub-menu" th:style="${#request.getAttribute('menuGroupNo') == adminMenuDto.menuGroupNo} ? 'display: block;'">
+                        <li th:each="menuList : ${adminMenuDto.menuList}">
+                            <a th:href="${menuList.menuLink}" th:text="${menuList.menuName}"></a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <a href="#" class="scrollup">Scroll</a>
+</html>
